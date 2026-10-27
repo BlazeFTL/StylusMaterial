@@ -23,29 +23,33 @@ from pathlib import Path
 
 MATERIAL_CSS = r'''/* Material light theme + mobile layout (added by patch.py) */
 
-/* ===== tokens ===== */
+/* ===== tokens (peach & purple) ===== */
 :root {
-  --md-primary: #6750a4;
+  --md-primary: #8400ff;
   --md-on-primary: #fff;
-  --md-primary-c: #eaddff;
-  --md-on-primary-c: #21005d;
-  --md-accent: #d9503f;
-  --md-on-accent: #fff;
-  --md-accent-c: #ffdad2;
-  --md-on-accent-c: #410e08;
-  --md-surface: #fffbfe;
-  --md-bg: #f6f0fa;
-  --md-surface-v: #e7e0ec;
-  --md-outline: #79747e;
-  --md-outline-v: #cac4d0;
-  --md-text: #1d1b20;
-  --md-text-2: #49454f;
-  --md-danger: #b3261e;
-  --md-hover: rgba(0, 0, 0, .06);
-  --md-press: rgba(0, 0, 0, .12);
-  --md-elev1: 0 1px 2px rgba(0, 0, 0, .18), 0 1px 4px 1px rgba(0, 0, 0, .08);
-  --md-elev2: 0 2px 6px rgba(0, 0, 0, .2), 0 6px 16px 2px rgba(0, 0, 0, .12);
-  --family: Roboto, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --md-primary-c: #f1e4ff;
+  --md-on-primary-c: #3a0873;
+  --md-accent: #ff645e;
+  --md-on-accent: #2a0300;
+  --md-accent-c: #ffd6c4;
+  --md-on-accent-c: #3d1306;
+  --md-lav: #9191ff;
+  --md-grad: linear-gradient(120deg, #910fff 0%, #ff645e 100%);
+  --md-cta: var(--md-grad);
+  --md-on-cta: #fff;
+  --md-surface: #fff;
+  --md-bg: #fff8f4;
+  --md-surface-v: #ffeee6;
+  --md-outline: #85798f;
+  --md-outline-v: #f1e2ea;
+  --md-text: #000004;
+  --md-text-2: #41364d;
+  --md-danger: #d93636;
+  --md-hover: rgba(132, 0, 255, .06);
+  --md-press: rgba(132, 0, 255, .12);
+  --md-elev1: 0 1px 2px rgba(80, 20, 120, .14), 0 1px 4px 1px rgba(80, 20, 120, .06);
+  --md-elev2: 0 2px 6px rgba(80, 20, 120, .18), 0 6px 16px 2px rgba(80, 20, 120, .1);
+  --family: Inter, Roboto, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --font-size: 13px;
   --input-height: 32px;
   --icon-font-size: 20px;
@@ -59,25 +63,28 @@ MATERIAL_CSS = r'''/* Material light theme + mobile layout (added by patch.py) *
   --bg: var(--md-surface);
   --fg: var(--md-text);
   --accent-1: var(--md-primary);
-  --accent-2: #9a82db;
-  --accent-3: var(--md-primary-c);
-  --accent-4: #f0e8ff;
-  --accent-5: #f7f2ff;
+  --accent-2: var(--md-lav);
+  --accent-3: var(--md-surface-v);
+  --accent-4: #fff0e8;
+  --accent-5: #fffaf7;
   --header-bg: var(--md-surface);
-  --zebra: rgba(103, 80, 164, .05);
+  --zebra: rgba(132, 0, 255, .04);
   --red1: var(--md-danger);
   --focus-color1: var(--md-primary);
   --focus-color2: transparent;
 }
 :root[data-ui-theme="dark"] {
-  --md-primary: #d0bcff;
-  --md-on-primary: #381e72;
-  --md-primary-c: #4f378b;
+  --md-primary: #d0b3ff;
+  --md-on-primary: #2d0060;
+  --md-primary-c: #45217f;
   --md-on-primary-c: #eaddff;
-  --md-accent: #ffb4a8;
-  --md-on-accent: #561e16;
-  --md-accent-c: #7a2e24;
+  --md-accent: #ff8a84;
+  --md-on-accent: #3d0a07;
+  --md-accent-c: #6b2a28;
   --md-on-accent-c: #ffdad4;
+  --md-lav: #b4b4ff;
+  --md-grad: linear-gradient(120deg, #b98cff 0%, #ff8a84 100%);
+  --md-on-cta: #1e0036;
   --md-surface: var(--c100);
   --md-bg: var(--c99);
   --md-surface-v: var(--c90);
@@ -148,8 +155,8 @@ html #save-button:not(:disabled),
 html .dirty #save-button + button,
 html #apply-all-updates,
 html #message-box-buttons button:first-child {
-  background: var(--md-accent) !important;
-  color: var(--md-on-accent) !important;
+  background: var(--md-cta) !important;
+  color: var(--md-on-cta) !important;
 }
 html .split-btn { display: inline-flex; gap: 2px; }
 .compact-layout #stylus-edit #header #save-button { min-width: 64px; }
@@ -558,8 +565,8 @@ html #message-box-buttons button:not(:first-child) {
 /* ===== options page ===== */
 #stylus-options { background: var(--md-bg); color: var(--md-text); padding-bottom: calc(var(--input-height) + 28px + env(safe-area-inset-bottom, 0px)); }
 #stylus-options header {
-  background: var(--md-primary) !important;
-  color: var(--md-on-primary);
+  background: var(--md-grad) !important;
+  color: var(--md-on-cta);
   padding: 12px 16px;
   min-height: 56px;
   box-sizing: border-box;
@@ -570,7 +577,7 @@ html #message-box-buttons button:not(:first-child) {
 }
 #stylus-options header h1 { font-size: 20px; font-weight: 500; }
 #stylus-options header i {
-  color: var(--md-on-primary) !important;
+  color: var(--md-on-cta) !important;
   font-size: 24px;
   padding: 8px;
   border-radius: 50%;
@@ -649,7 +656,7 @@ html #message-box-buttons button:not(:first-child) {
   box-shadow: 0 -2px 8px rgba(0, 0, 0, .12);
 }
 #stylus-options footer button { flex: 1 1 0; margin: 0 !important; padding: 0 8px !important; min-width: 0; }
-#stylus-options footer #manage { background: var(--md-accent) !important; color: var(--md-on-accent) !important; }
+#stylus-options footer #manage { background: var(--md-cta) !important; color: var(--md-on-cta) !important; }
 #stylus-options footer #reset { background: transparent !important; color: var(--md-danger) !important; box-shadow: inset 0 0 0 1px var(--md-outline-v); }
 #stylus-options #FOUC h2 { color: var(--md-danger); }
 @media (max-width: 549px) {
@@ -752,8 +759,8 @@ html #message-box-buttons button:not(:first-child) {
 }
 .compact-layout #stylus-manage #update-history-button::before { content: attr(title) !important; }
 .compact-layout #stylus-manage #actions a#add-style { display: block; }
-.compact-layout #stylus-manage #actions a#add-style > button { background: var(--md-accent) !important; color: var(--md-on-accent) !important; }
-.compact-layout #stylus-manage #actions a#add-style > button i { color: var(--md-on-accent) !important; }
+.compact-layout #stylus-manage #actions a#add-style > button { background: var(--md-cta) !important; color: var(--md-on-cta) !important; }
+.compact-layout #stylus-manage #actions a#add-style > button i { color: var(--md-on-cta) !important; }
 .compact-layout #stylus-manage #backup { display: contents; }
 .compact-layout #stylus-manage #backup > button:not(.icon) { width: 100%; height: 44px; border-radius: 14px !important; }
 .compact-layout #stylus-manage #backup > .split-btn { display: flex; width: 100%; }
@@ -890,26 +897,6 @@ html.mobile #stylus-popup { min-width: 100% !important; max-width: none !importa
 #stylus-popup #main-actions { background: var(--md-accent-c); border-bottom: 0; }
 #stylus-popup #main-actions a, #stylus-popup #main-actions i { color: var(--md-on-accent-c); }
 #stylus-popup #write-style { font-weight: 500; }
-#stylus-popup #popup-options {
-  background: var(--md-surface);
-  border-top: 1px solid var(--md-outline-v);
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 4px 8px;
-}
-#stylus-popup #popup-options .split-btn { display: inline-flex; align-items: center; gap: 0; }
-#stylus-popup #popup-options a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  color: var(--md-text-2);
-}
-#stylus-popup #popup-options a:active { background: var(--md-press); }
-#stylus-popup #popup-options a i, #stylus-popup #popup-options a svg { color: var(--md-primary); }
 #stylus-popup #disableAll-label {
   position: relative;
   display: flex;
@@ -936,6 +923,304 @@ html #stylus-popup #disableAll::after { content: ""; }
 
 /* ===== embedded dialogs / config ===== */
 .config-dialog #message-box-contents { padding-top: 4px; }
+
+/* ============================================================
+   v2: peach & purple refresh + mobile fixes
+   ============================================================ */
+
+/* ----- popup: page ----- */
+html.mobile body#stylus-popup {
+  min-height: var(--100dvh, 100dvh);
+  background: var(--md-bg);
+}
+#stylus-popup { --border: 1px solid var(--md-outline-v); }
+#stylus-popup #unstylable {
+  margin: 16px 16px 8px;
+  padding: 16px;
+  border-radius: 20px;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev1);
+}
+#stylus-popup #no-styles {
+  margin: 16px 16px 8px;
+  padding: 24px 20px;
+  border-radius: 24px;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev1);
+  text-align: center;
+  line-height: 1.4;
+  color: var(--md-text-2);
+  cursor: pointer;
+}
+#stylus-popup #no-styles:hover { color: var(--md-text-2); }
+#stylus-popup #no-styles b { display: block; margin-top: 6px; color: var(--md-primary); font-weight: 600; }
+#stylus-popup #installed {
+  margin: 8px 16px;
+  border: 0 !important;
+  border-radius: 20px;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev1);
+}
+#stylus-popup #installed:empty { display: none; }
+#stylus-popup #toggler {
+  margin: 8px 16px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev1);
+}
+#stylus-popup #main-actions {
+  margin: 8px 16px;
+  border: 0 !important;
+  border-radius: 16px;
+  background: var(--md-accent-c);
+  align-items: center;
+}
+#stylus-popup #disableAll-label { border-radius: 16px; }
+#stylus-popup .write-style-link:last-child { color: var(--md-on-accent-c); }
+
+/* ----- popup: bottom action bar with labels ----- */
+html body#stylus-popup #popup-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  flex: 0 0 auto;
+  margin-top: auto;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  border: 0;
+  background: transparent;
+}
+#stylus-popup #popup-options > a,
+#stylus-popup #popup-options .split-btn {
+  min-width: 0;
+  height: 48px;
+  border-radius: 16px;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev1);
+}
+#stylus-popup #popup-options a:not(.split-btn-menu > *) {
+  color: var(--md-text);
+  font: 500 14px/1 var(--family);
+  text-decoration: none;
+}
+#stylus-popup #popup-options > a,
+#stylus-popup #popup-options .split-btn > a:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 12px;
+  border-radius: 16px;
+}
+#stylus-popup #popup-options .split-btn { display: flex; align-items: stretch; position: relative; gap: 0; }
+#stylus-popup #popup-options .split-btn > a:first-child { flex: 1 1 auto; min-width: 0; border-radius: 16px 0 0 16px; }
+#stylus-popup #popup-options a.dropdown {
+  flex: 0 0 40px;
+  min-width: 0;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid var(--md-outline-v);
+  border-radius: 0 16px 16px 0;
+}
+#stylus-popup #popup-options a:not(.split-btn-menu > *):active { background: var(--md-press); }
+#stylus-popup #popup-options a[data-label]::after { content: attr(data-label); }
+#stylus-popup #popup-options a:not(.split-btn-menu > *) i { color: var(--md-primary); font-size: 22px; }
+#stylus-popup #popup-options a.dropdown i { font-size: 20px; color: var(--md-text-2); }
+
+/* ----- popup: dropdown menus (vertical sheet) ----- */
+html body#stylus-popup #popup-options .split-btn-menu {
+  position: absolute;
+  top: auto;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: auto;
+  width: max-content;
+  min-width: 100%;
+  max-width: calc(100vw - 32px);
+  padding: 6px;
+  border: 0;
+  border-radius: 20px;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev2);
+  transform: none;
+  z-index: 1000;
+}
+html.styles-last body#stylus-popup #popup-options .split-btn-menu { top: calc(100% + 8px); bottom: auto; }
+html body#stylus-popup #popup-options .split-btn:nth-child(2) .split-btn-menu { left: auto; right: 0; }
+#stylus-popup #popup-options .split-btn-menu::before {
+  display: block;
+  padding: 8px 14px 6px;
+  color: var(--md-primary);
+  font: 600 11px/1 var(--family);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+#stylus-popup #popup-options #popup-manage-button ~ .split-btn-menu::before { content: "Manage"; }
+#stylus-popup #popup-options #find-styles-btn ~ .split-btn-menu::before { content: "Search styles on"; }
+#stylus-popup #popup-options .split-btn-menu > * {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: auto;
+  min-width: 0;
+  height: 48px;
+  padding: 0 14px !important;
+  border-radius: 12px;
+  background: none;
+  box-shadow: none;
+  color: var(--md-text);
+  font: 500 14px/1 var(--family);
+  text-decoration: none;
+  white-space: nowrap;
+}
+#stylus-popup #popup-options .split-btn-menu > :is(:hover, :focus, :active) {
+  background: var(--md-primary-c) !important;
+  color: var(--md-on-primary-c);
+}
+
+/* ----- manage: header, empty state, links ----- */
+#stylus-manage #header {
+  border: 0 !important;
+  border-radius: 0 0 24px 24px;
+  background: var(--md-grad) top left / 100% 4px no-repeat, var(--md-surface) !important;
+}
+.compact-layout #stylus-manage #header { border-bottom: 0 !important; }
+.compact-layout #stylus-manage #header .filter-selection,
+.compact-layout #stylus-manage #header label { background: none; }
+.compact-layout.empty #stylus-manage #links { padding: 20px 16px 28px; font-size: 14px; line-height: 1.3; }
+.compact-layout.empty #stylus-manage #links::before {
+  content: "Get styles";
+  display: block;
+  margin: 0 4px 12px;
+  color: var(--md-primary);
+  font: 600 12px/1 var(--family);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.compact-layout #stylus-manage #links main { display: flex; flex-flow: column; gap: 8px; }
+.compact-layout #stylus-manage #links main a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 8px 8px 8px;
+  border-radius: 16px;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev1);
+  color: var(--md-text);
+  font-weight: 500;
+  text-decoration: none;
+}
+.compact-layout #stylus-manage #links main a:active { background: var(--md-primary-c); }
+.compact-layout #stylus-manage #links main a::before {
+  content: "";
+  flex: 0 0 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: url("@@EXT_P@@") center / 20px no-repeat, var(--md-primary-c);
+}
+.compact-layout #stylus-manage #links main a::after {
+  content: "";
+  flex: 0 0 24px;
+  height: 24px;
+  margin-left: auto;
+  background: url("@@CHEV@@") center / 24px no-repeat;
+}
+.compact-layout #stylus-manage #links main a:has(> img)::before { display: none; }
+.compact-layout #stylus-manage #links main a > img { width: 24px; height: 24px; margin: 6px; }
+[data-ui-theme="dark"].compact-layout #stylus-manage #links main a::before {
+  background: url("@@EXT_D@@") center / 20px no-repeat, var(--md-primary-c);
+}
+.compact-layout #stylus-manage #backup-hint main {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--md-surface-v);
+  color: var(--md-text-2);
+  font-size: 13px;
+}
+
+/* ----- editor: toolbar fills the row, header accent ----- */
+#stylus-edit #header {
+  border-radius: 0 0 20px 20px;
+  background: var(--md-grad) top left / 100% 3px no-repeat, var(--md-surface);
+}
+.compact-layout #stylus-edit #header [data-label],
+.compact-layout #stylus-edit #header #usercss-docs {
+  flex: 1 1 56px;
+  width: auto;
+  max-width: 96px;
+}
+
+/* ----- editor: code area ----- */
+html:not([data-ui-theme="dark"]) .CodeMirror.cm-s-default { background: var(--md-surface); }
+html:not([data-ui-theme="dark"]) .cm-s-default .CodeMirror-gutters {
+  background: var(--md-bg);
+  border-right: 1px solid var(--md-outline-v);
+}
+html:not([data-ui-theme="dark"]) .cm-s-default .CodeMirror-linenumber { color: var(--md-outline); }
+html:not([data-ui-theme="dark"]) .cm-s-default .CodeMirror-activeline-background { background: var(--md-hover); }
+html:not([data-ui-theme="dark"]) .cm-s-default .CodeMirror-selected { background: var(--md-accent-c); }
+html:not([data-ui-theme="dark"]) .cm-s-default .CodeMirror-cursor { border-left-color: var(--md-primary); }
+
+/* ----- editor: @-moz-document rows must not run under the gutter ----- */
+.usercss .applies-to {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 12px calc(12px + var(--cm-bar-width, 0px)) 8px calc(var(--cm-gutter-w, 0px) + 12px);
+}
+.usercss .applies-to ul { min-width: 0; --input-height: 34px; }
+.usercss .applies-to li { flex-wrap: nowrap; gap: 6px; margin-bottom: 6px; }
+.usercss .applies-to li .select-wrapper { flex: 0 1 auto; min-width: 0; max-width: 46%; margin-right: 0; }
+.usercss .applies-to li select { max-width: 100%; text-overflow: ellipsis; }
+.usercss .applies-to li .applies-value-wrapper { flex: 1 1 0; min-width: 0; gap: 6px; }
+.usercss .applies-to li .applies-value { flex: 1 1 0; min-width: 0; width: 100%; }
+.usercss .applies-to li img { margin: 0; }
+.usercss .applies-to .add-applies-to,
+.usercss .applies-to .remove-applies-to {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+.usercss .applies-to .add-applies-to:active,
+.usercss .applies-to .remove-applies-to:active { background: var(--md-press); }
+.usercss .applies-to li .add-applies-to:first-child { margin-left: 0; }
+
+/* ----- options: full screen on phones, tidy time row ----- */
+html.mobile:has(> body#stylus-options) { padding: 0 !important; }
+html.mobile #stylus-options {
+  width: 100% !important;
+  max-width: none;
+  height: var(--100dvh, 100dvh);
+  max-height: var(--100dvh, 100dvh);
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0;
+  box-shadow: none !important;
+}
+html.mobile #stylus-options main { flex: 1 1 auto; min-height: 0; }
+#stylus-options label:has(> #manage\.newUI) { display: none; }
+#stylus-options label.radio-wrapper:has(.md-time-range) { flex-wrap: wrap; }
+#stylus-options .md-time-range {
+  display: flex;
+  flex: 1 0 100%;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  margin: 2px 0 10px 30px;
+}
+#stylus-options .md-time-range input[type=time] { flex: 1 1 0; width: auto; min-width: 0; margin: 0; }
+#stylus-options .md-time-range .md-to { flex: 0 0 auto; color: var(--md-text-2); font-size: 13px; }
 '''
 
 CLIPBOARD_JS = r'''import editor from './editor';
@@ -1196,13 +1481,28 @@ class Patcher:
         log('edit', f'{rel}: {marker}')
 
 
+EXTRA_PATHS = {
+    'chev': 'M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z',
+}
+
+
+def svg_uri(d, fill):
+    svg = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
+           '<path fill="%s" d="%s"/></svg>' % (fill, d))
+    return 'data:image/svg+xml,' + urllib.parse.quote(svg, safe="/:=,;()' ").replace('"', '%22')
+
+
 def material_css(P):
     icon = P.path('src/icon/usercss.svg')
     svg = read(icon) if icon.exists() else (
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="%s"/></svg>' % ICONS['config-editor'])
     svg = re.sub(r'\s+', ' ', svg.replace('<!-- pixel-aligned -->', '')).strip()
     uri = 'data:image/svg+xml,' + urllib.parse.quote(svg, safe="/:=,;()' ")
-    return MATERIAL_CSS.replace('@@USERCSS_ICON@@', uri.replace('"', '%22'))
+    css = MATERIAL_CSS.replace('@@USERCSS_ICON@@', uri.replace('"', '%22'))
+    return (css
+            .replace('@@EXT_P@@', svg_uri(ICONS['external'], '#8400ff'))
+            .replace('@@EXT_D@@', svg_uri(ICONS['external'], '#d0b3ff'))
+            .replace('@@CHEV@@', svg_uri(EXTRA_PATHS['chev'], '#85798f')))
 
 
 def bump_minor(ver):
@@ -1263,6 +1563,18 @@ def apply(root, args):
     P.edit(E, '<div id="details-wrapper">',
            '<div class="md-break md-break-1"></div><div class="md-break md-break-2"></div>\n'
            '      <div id="details-wrapper">', marker='md-break-1')
+    for old, new in [
+        ('<a id="popup-manage-button" ', '<a id="popup-manage-button" data-label="Manage" '),
+        ('<a id="find-styles-btn" ', '<a id="find-styles-btn" data-label="Find styles" '),
+        ('<a id="help" ', '<a id="help" data-label="Help" '),
+        ('<a id="options-btn" ', '<a id="options-btn" data-label="Options" '),
+    ]:
+        P.edit('src/popup.html', old, new, marker=re.search(r'data-label="[^"]+"', new).group(0))
+    P.edit('src/options.html',
+           r'(<input type="time" required id="schemeSwitcher\.nightStart">)\s*~\s*'
+           r'(<input type="time" required id="schemeSwitcher\.nightEnd">)',
+           r'<span class="md-time-range">\1<span class="md-to">to</span>\2</span>',
+           marker='md-time-range', regex=True)
     for rel in ('src/manage.html', 'src/popup.html'):
         P.edit(rel, r'<svg class="hollow-gear"[^>]*>\s*<text[^>]*>\u2699</text>\s*</svg>',
                '<i class="i-config"></i>', regex=True, count=0, optional=True)
@@ -1274,6 +1586,30 @@ def apply(root, args):
                  'ClipboardBar from', after="import EditorHeader from './editor-header';\n")
     P.edit('src/edit/index.js', '  EditorHeader();\n', '  EditorHeader();\n  ClipboardBar();\n',
            marker='ClipboardBar();')
+
+    print('== mobile behavior (card list always, compact layout always, editor gutter)')
+    # backups can import prefs (manage.newUI=false, compactWidth) that break the card layout
+    P.edit('src/manage/ui.js', 'const tableView_ = __values[pManageNewUi];',
+           'const tableView_ = true; // mobile fork: card list only', marker='const tableView_ = true')
+    P.edit('src/background/index.js', "if (MOBILE) prefs.set('manage.newUI', false);",
+           "if (MOBILE) prefs.set('manage.newUI', true);", marker="prefs.set('manage.newUI', true)")
+    P.edit('src/js/dom-init.js', "prefs.subscribe('compactWidth', (k, val) => {\n",
+           "prefs.subscribe('compactWidth', (k, val) => {\n    if (MOBILE) val = 99999; // mobile fork: always compact\n",
+           marker='val = 99999')
+    P.edit('src/edit/moz-section-widget.js',
+           "        const value = cm.display.barWidth + 'px';\n"
+           "        if (widget[KEY] !== value) {\n"
+           "          widget[KEY] = value;\n"
+           "          node.style.setProperty('--cm-bar-width', value);\n"
+           "        }",
+           "        const value = cm.display.barWidth + 'px';\n"
+           "        const gutterW = cm.display.gutters.offsetWidth + 'px';\n"
+           "        if (widget[KEY] !== value + gutterW) {\n"
+           "          widget[KEY] = value + gutterW;\n"
+           "          node.style.setProperty('--cm-bar-width', value);\n"
+           "          node.style.setProperty('--cm-gutter-w', gutterW);\n"
+           "        }",
+           marker='--cm-gutter-w')
 
     print('== manifest / version')
     P.edit('src/manifest.json', '"alarms",\n', '"alarms",\n    "clipboardRead",\n    "clipboardWrite",\n',
