@@ -1,0 +1,86 @@
+name: build-xpi
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Bump minor version
+        type: boolean
+        default: true
+      addon_id:
+        description: Gecko add-on id (optional)
+        type: string
+        default: ''
+      ext_name:
+        description: Extension name (optional)
+        type: string
+        default: ''
+      release:
+        description: Publish GitHub release with .xpi
+        type: boolean
+        default: true
+  push:
+    branches: [master]
+    paths:
+      - patch.py
+      - .github/workflows/build-xpi.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Patch and build
+        env:
+          BUMP: ${{ inputs.bump }}
+          ADDON_ID: ${{ inputs.addon_id }}
+          EXT_NAME: ${{ inputs.ext_name }}
+        run: |
+          args=(--build)
+          if [ "$BUMP" = "false" ]; then args+=(--no-bump); fi
+          if [ -n "$ADDON_ID" ]; then args+=(--id "$ADDON_ID"); fi
+          if [ -n "$EXT_NAME" ]; then args+=(--name "$EXT_NAME"); fi
+          python patch.py "${args[@]}"
+
+      - name: Locate xpi
+        run: |
+          xpi=$(ls stylus-material-*.xpi | head -n1)
+          ver=${xpi#stylus-material-}
+          ver=${ver%.xpi}
+          echo "XPI=$xpi" >> "$GITHUB_ENV"
+          echo "VER=$ver" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: stylus-material-${{ env.VER }}
+          path: ${{ env.XPI }}
+          if-no-files-found: error
+
+      - name: Release
+        if: ${{ inputs.release }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VER }}
+          name: Stylus Material ${{ env.VER }}
+          target_commitish: ${{ github.sha }}
+          files: ${{ env.XPI }}
