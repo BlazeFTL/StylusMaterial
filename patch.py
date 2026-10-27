@@ -1007,9 +1007,9 @@ html body#stylus-popup #popup-options {
 #stylus-popup #popup-options .split-btn > a:first-child {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 0 12px;
+  justify-content: flex-start;
+  gap: 14px;
+  padding: 0 12px 0 20px;
   border-radius: 16px;
 }
 #stylus-popup #popup-options .split-btn { display: flex; align-items: stretch; position: relative; gap: 0; }
@@ -1028,7 +1028,7 @@ html body#stylus-popup #popup-options {
 }
 #stylus-popup #popup-options a:not(.split-btn-menu > *):active { background: var(--md-press); }
 #stylus-popup #popup-options a[data-label]::after { content: attr(data-label); }
-#stylus-popup #popup-options a:not(.split-btn-menu > *) i { color: var(--md-primary); font-size: 22px; }
+#stylus-popup #popup-options a:not(.split-btn-menu > *) i { flex: 0 0 auto; min-width: 24px; text-align: center; color: var(--md-primary); font-size: 22px; }
 #stylus-popup #popup-options a.dropdown i { font-size: 20px; color: var(--md-text-2); }
 
 /* ----- popup: dropdown menus (vertical sheet) ----- */
@@ -1082,13 +1082,135 @@ html body#stylus-popup #popup-options .split-btn:nth-child(2) .split-btn-menu { 
   color: var(--md-on-primary-c);
 }
 
+
+/* ----- popup: per-style menu (3 dots) ----- */
+#stylus-popup #menu {
+  box-sizing: border-box;
+  padding-left: 16px;
+  padding-right: 16px;
+  background: rgba(40, 10, 70, .45);
+}
+#stylus-popup #menu > div {
+  width: 100%;
+  max-width: 440px;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 28px;
+  overflow: hidden;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev2);
+}
+#stylus-popup #menu > div > * { padding: 12px 20px; }
+#stylus-popup #menu header {
+  gap: 12px;
+  padding: 14px 20px !important;
+  border-bottom: 0;
+  background: var(--md-surface-v);
+  color: var(--md-text);
+  font-size: 15px;
+  font-weight: 600;
+}
+#stylus-popup #menu.enabled header { background: var(--md-primary-c); color: var(--md-on-primary-c); }
+#stylus-popup #menu.delete header { background: var(--md-danger); color: #fff; }
+#stylus-popup #menu.delete header i { color: #fff; }
+#stylus-popup #menu header label { display: flex; align-items: center; flex: 1 1 auto; min-width: 0; }
+#stylus-popup #menu header a { margin-left: 0; }
+#stylus-popup #menu header i { color: var(--md-primary); font-size: 22px; }
+#stylus-popup #menu [data-ovr]:not([hidden]) { min-height: 52px; font-size: 14px; }
+#stylus-popup #menu [data-ovr] label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  margin-left: 6px;
+  line-height: 40px;
+}
+html #stylus-popup #menu [data-ovr] label input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: var(--md-surface-v) !important;
+}
+html #stylus-popup #menu [data-ovr] label input::after { display: none !important; }
+html #stylus-popup #menu [data-ovr] label input:checked {
+  background: color-mix(in srgb, var(--c, var(--md-primary)) 18%, transparent) !important;
+}
+#stylus-popup #menu [data-ovr] i { top: 0; font-size: 22px; color: var(--md-outline); }
+#stylus-popup #menu main > p:not(#matchedOvr) {
+  margin: 4px -20px;
+  padding: 10px 20px;
+  background: var(--md-surface-v);
+  color: var(--md-text-2);
+  font-size: 13px;
+  line-height: 1.4;
+}
+#stylus-popup #menu #matchedOvr {
+  margin: 8px -20px 0;
+  padding: 10px 20px 0;
+  border-top: 1px solid var(--md-outline-v);
+  color: var(--md-text-2);
+  font-size: 12px;
+}
+#stylus-popup #menu footer {
+  direction: ltr !important;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 16px 16px;
+  border-top: 0;
+  background: transparent;
+}
+html #stylus-popup #menu footer button { margin: 0; flex: 0 0 auto; padding: 0 18px !important; }
+html #stylus-popup #menu footer [data-cmd=cancel] { order: 1; background: var(--md-surface-v) !important; color: var(--md-text) !important; }
+html #stylus-popup #menu footer [data-cmd=edit] { order: 2; background: var(--md-cta) !important; color: var(--md-on-cta) !important; }
+html #stylus-popup #menu footer [data-cmd=delete] {
+  order: 0;
+  margin-right: auto;
+  background: transparent !important;
+  color: var(--md-danger) !important;
+  box-shadow: inset 0 0 0 1px var(--md-outline-v);
+}
+html #stylus-popup #menu.delete footer [data-cmd=delete] { background: var(--md-danger) !important; color: #fff !important; box-shadow: none; }
+
 /* ----- manage: header, empty state, links ----- */
 #stylus-manage #header {
   border: 0 !important;
   border-radius: 0 0 24px 24px;
-  background: var(--md-grad) top left / 100% 4px no-repeat, var(--md-surface) !important;
+  background: var(--md-surface) !important;
 }
 .compact-layout #stylus-manage #header { border-bottom: 0 !important; }
+.compact-layout #stylus-manage #header h1 {
+  display: flex;
+  visibility: visible;
+  align-items: center;
+  gap: 12px;
+  margin: -12px -16px 4px;
+  padding: 14px 16px;
+  background: var(--md-grad);
+  color: var(--md-on-cta);
+  font: 500 20px/1.2 var(--family);
+}
+.compact-layout #stylus-manage #header h1::before {
+  content: "S";
+  display: grid;
+  place-items: center;
+  flex: 0 0 32px;
+  height: 32px;
+  box-sizing: border-box;
+  border: 2px solid #000;
+  border-radius: 9px;
+  background: #35f0d8;
+  color: #000;
+  font: 800 18px/1 var(--family);
+}
 .compact-layout #stylus-manage #header .filter-selection,
 .compact-layout #stylus-manage #header label { background: none; }
 .compact-layout.empty #stylus-manage #links { padding: 20px 16px 28px; font-size: 14px; line-height: 1.3; }
@@ -1133,7 +1255,17 @@ html body#stylus-popup #popup-options .split-btn:nth-child(2) .split-btn-menu { 
   background: url("@@CHEV@@") center / 24px no-repeat;
 }
 .compact-layout #stylus-manage #links main a:has(> img)::before { display: none; }
-.compact-layout #stylus-manage #links main a > img { width: 24px; height: 24px; margin: 6px; }
+.compact-layout #stylus-manage #links main a.target { padding: 8px; line-height: 1.3; overflow: visible; }
+.compact-layout #stylus-manage #links main a.target > img {
+  position: static;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--md-primary-c);
+}
 [data-ui-theme="dark"].compact-layout #stylus-manage #links main a::before {
   background: url("@@EXT_D@@") center / 20px no-repeat, var(--md-primary-c);
 }
@@ -1148,7 +1280,7 @@ html body#stylus-popup #popup-options .split-btn:nth-child(2) .split-btn-menu { 
 /* ----- editor: toolbar fills the row, header accent ----- */
 #stylus-edit #header {
   border-radius: 0 0 20px 20px;
-  background: var(--md-grad) top left / 100% 3px no-repeat, var(--md-surface);
+  background: var(--md-surface);
 }
 .compact-layout #stylus-edit #header [data-label],
 .compact-layout #stylus-edit #header #usercss-docs {
@@ -1210,6 +1342,37 @@ html.mobile #stylus-options {
 }
 html.mobile #stylus-options main { flex: 1 1 auto; min-height: 0; }
 #stylus-options label:has(> #manage\.newUI) { display: none; }
+#stylus-options main { padding: 14px 14px 24px; }
+#stylus-options .block {
+  margin: 0 0 14px;
+  padding: 0 16px 8px;
+  overflow: hidden;
+  border: 1px solid var(--md-outline-v) !important;
+  box-shadow: var(--md-elev1);
+}
+#stylus-options .block > h2 {
+  position: relative;
+  margin: 0 -16px 6px;
+  padding: 14px 16px 12px 30px;
+  border-bottom: 1px solid var(--md-outline-v);
+  background: var(--md-surface-v);
+  color: var(--md-text);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+#stylus-options .block > h2::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  width: 4px;
+  height: 16px;
+  margin-top: -8px;
+  border-radius: 2px;
+  background: var(--md-grad);
+}
 #stylus-options label.radio-wrapper:has(.md-time-range) { flex-wrap: wrap; }
 #stylus-options .md-time-range {
   display: flex;
