@@ -25,19 +25,22 @@ MATERIAL_CSS = r'''/* Material light theme + mobile layout (added by patch.py) *
 
 /* ===== tokens ===== */
 :root {
-  --md-primary: #00796b;
+  --md-primary: #6750a4;
   --md-on-primary: #fff;
-  --md-primary-c: #cdebe6;
-  --md-on-primary-c: #00201b;
-  --md-surface: #fff;
-  --md-bg: #f1f5f4;
-  --md-surface-v: #e6eeec;
-  --md-outline: #6f7977;
-  --md-outline-v: #c4cecc;
-  --md-text: #191c1b;
-  --md-text-2: #4f5b58;
+  --md-primary-c: #eaddff;
+  --md-on-primary-c: #21005d;
+  --md-accent: #d9503f;
+  --md-on-accent: #fff;
+  --md-accent-c: #ffdad2;
+  --md-on-accent-c: #410e08;
+  --md-surface: #fffbfe;
+  --md-bg: #f6f0fa;
+  --md-surface-v: #e7e0ec;
+  --md-outline: #79747e;
+  --md-outline-v: #cac4d0;
+  --md-text: #1d1b20;
+  --md-text-2: #49454f;
   --md-danger: #b3261e;
-  --md-amber: #ffb300;
   --md-hover: rgba(0, 0, 0, .06);
   --md-press: rgba(0, 0, 0, .12);
   --md-elev1: 0 1px 2px rgba(0, 0, 0, .18), 0 1px 4px 1px rgba(0, 0, 0, .08);
@@ -56,21 +59,25 @@ MATERIAL_CSS = r'''/* Material light theme + mobile layout (added by patch.py) *
   --bg: var(--md-surface);
   --fg: var(--md-text);
   --accent-1: var(--md-primary);
-  --accent-2: #26a69a;
+  --accent-2: #9a82db;
   --accent-3: var(--md-primary-c);
-  --accent-4: #dff1ee;
-  --accent-5: #edf6f4;
+  --accent-4: #f0e8ff;
+  --accent-5: #f7f2ff;
   --header-bg: var(--md-surface);
-  --zebra: rgba(0, 121, 107, .045);
+  --zebra: rgba(103, 80, 164, .05);
   --red1: var(--md-danger);
   --focus-color1: var(--md-primary);
   --focus-color2: transparent;
 }
 :root[data-ui-theme="dark"] {
-  --md-primary: hsl(174, 45%, 62%);
-  --md-on-primary: hsl(174, 60%, 8%);
-  --md-primary-c: hsl(174, 28%, 22%);
-  --md-on-primary-c: hsl(174, 40%, 88%);
+  --md-primary: #d0bcff;
+  --md-on-primary: #381e72;
+  --md-primary-c: #4f378b;
+  --md-on-primary-c: #eaddff;
+  --md-accent: #ffb4a8;
+  --md-on-accent: #561e16;
+  --md-accent-c: #7a2e24;
+  --md-on-accent-c: #ffdad4;
   --md-surface: var(--c100);
   --md-bg: var(--c99);
   --md-surface-v: var(--c90);
@@ -88,6 +95,7 @@ MATERIAL_CSS = r'''/* Material light theme + mobile layout (added by patch.py) *
 }
 
 /* ===== base ===== */
+body[id^="stylus-"] [hidden] { display: none !important; }
 html, body { -webkit-tap-highlight-color: transparent; }
 body { font-family: var(--family); }
 :focus, .CodeMirror-focused { --focus-shadow: 0 0 0 1px var(--md-primary); }
@@ -136,19 +144,15 @@ html button.icon {
   color: var(--md-text-2) !important;
   border-radius: 50% !important;
 }
-html #save-button,
-html #save-button + button,
+html #save-button:not(:disabled),
+html .dirty #save-button + button,
 html #apply-all-updates,
 html #message-box-buttons button:first-child {
-  background: var(--md-primary) !important;
-  color: var(--md-on-primary) !important;
-}
-html .dirty #save-button,
-html .dirty #save-button + button {
-  background: var(--md-amber) !important;
-  color: #3b2a00 !important;
+  background: var(--md-accent) !important;
+  color: var(--md-on-accent) !important;
 }
 html .split-btn { display: inline-flex; gap: 2px; }
+.compact-layout #stylus-edit #header #save-button { min-width: 64px; }
 html .split-btn > button:first-child { border-radius: 20px 4px 4px 20px !important; padding-right: 14px !important; }
 html .split-btn > .split-btn-pedal {
   margin-left: 0 !important;
@@ -235,8 +239,8 @@ html input[type=checkbox]:not(.slider):checked::after {
   position: absolute;
   left: 4px;
   top: 0;
-  width: 5px;
-  height: 10px;
+  width: 5px !important;
+  height: 10px !important;
   box-sizing: content-box;
   border: solid var(--md-on-primary);
   border-width: 0 2px 2px 0;
@@ -382,7 +386,7 @@ html #message-box-buttons button:not(:first-child) {
   max-width: calc(100vw - 32px);
   padding: 12px 20px;
   border-radius: 8px;
-  background: #2b3230;
+  background: #322f35;
   color: #fff;
   font: 14px/1.3 var(--family);
   box-shadow: var(--md-elev2);
@@ -448,11 +452,11 @@ html #message-box-buttons button:not(:first-child) {
   justify-content: flex-start;
   gap: 2px;
   box-sizing: border-box;
-  width: 58px;
+  width: 56px;
   height: auto !important;
-  min-height: 54px;
+  min-height: 50px;
   margin: 0;
-  padding: 6px 2px 4px !important;
+  padding: 4px 2px 3px !important;
   border: 0 !important;
   border-radius: 14px !important;
   background: transparent !important;
@@ -500,6 +504,7 @@ html #message-box-buttons button:not(:first-child) {
 .compact-layout #stylus-edit #usercss-docs { order: 19; }
 .compact-layout #stylus-edit #url { order: 20; margin: 0; }
 .compact-layout #stylus-edit #preview-error { order: 21; }
+.compact-layout:not(.is-new-style) #stylus-edit #new-as { display: none; }
 .compact-layout #stylus-edit #new-as {
   order: 22;
   flex: 1 1 100%;
@@ -521,16 +526,17 @@ html #message-box-buttons button:not(:first-child) {
   display: flex;
   align-items: center;
   gap: 6px;
-  height: 32px;
+  height: 30px;
   margin: 0;
-  padding: 0 14px;
-  border-radius: 16px;
+  padding: 0 12px;
+  border-radius: 15px;
   background: var(--md-surface-v);
   color: var(--md-text);
   font: 500 12.5px/1 var(--family);
   white-space: nowrap;
 }
 .compact-layout #stylus-edit #header summary h2.i { font-size: 12.5px; padding-left: 8px; }
+.compact-layout #stylus-edit #header summary h2 { font-size: 12px; }
 .compact-layout #stylus-edit #header summary h2.i::after {
   order: -1;
   font-size: 18px;
@@ -624,13 +630,13 @@ html #message-box-buttons button:not(:first-child) {
   padding: 2px !important;
 }
 #stylus-options input[type=number] { border: 1px solid var(--md-outline) !important; padding: 0 8px !important; }
-#stylus-options .items:not(.swap) > label { justify-content: space-between; }
+#stylus-options label.radio-wrapper { justify-content: flex-start; flex-wrap: wrap; row-gap: 2px; }
 #stylus-options .items > label + label { border-top: 1px solid var(--md-outline-v); }
 #stylus-options .radio-wrapper { align-items: center; }
-#stylus-options input[type=time] { margin: 0 6px; width: auto; }
+#stylus-options input[type=time] { margin: 0 6px 0 0; width: 9.2em; min-width: 0; padding: 0 8px !important; }
 #stylus-options .radio-wrapper + span { margin-left: 8px; }
 #stylus-options .sync-options > div { gap: 12px !important; }
-#stylus-options .sync-options .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+#stylus-options .sync-options[data-enabled] .actions { display: flex; flex-wrap: wrap; gap: 8px; }
 #stylus-options .drive-options input { height: var(--input-height); }
 #stylus-options textarea { border-color: var(--md-outline) !important; }
 #stylus-options footer {
@@ -643,7 +649,7 @@ html #message-box-buttons button:not(:first-child) {
   box-shadow: 0 -2px 8px rgba(0, 0, 0, .12);
 }
 #stylus-options footer button { flex: 1 1 0; margin: 0 !important; padding: 0 8px !important; min-width: 0; }
-#stylus-options footer #manage { background: var(--md-primary) !important; color: var(--md-on-primary) !important; }
+#stylus-options footer #manage { background: var(--md-accent) !important; color: var(--md-on-accent) !important; }
 #stylus-options footer #reset { background: transparent !important; color: var(--md-danger) !important; box-shadow: inset 0 0 0 1px var(--md-outline-v); }
 #stylus-options #FOUC h2 { color: var(--md-danger); }
 @media (max-width: 549px) {
@@ -690,16 +696,25 @@ html #message-box-buttons button:not(:first-child) {
 .compact-layout #stylus-manage #manage-settings { flex-flow: column; align-items: stretch; padding: 0; }
 .compact-layout #stylus-manage #installed { padding: 8px 12px 24px; flex-direction: column; flex-wrap: nowrap; gap: 10px; }
 .compact-layout #stylus-manage #manage-settings { gap: 12px; }
-.compact-layout #stylus-manage #filters { display: flex; flex-wrap: wrap; gap: 4px 12px; }
-.compact-layout #stylus-manage .filter-selection { left: 0; display: flex; align-items: center; min-height: 40px; }
-.compact-layout #stylus-manage #header .filter-selection label { padding-left: 0; }
+.compact-layout #stylus-manage #filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.compact-layout #stylus-manage #filters > #stats { grid-column: 1 / -1; }
+.compact-layout #stylus-manage .filter-selection { left: 0; display: flex; align-items: center; gap: 8px; min-width: 0; min-height: 0; }
+.compact-layout #stylus-manage #header .filter-selection > label { margin: 0; padding: 0; }
+.compact-layout #stylus-manage .filter-selection > label > input { margin-right: 0; }
+.compact-layout #stylus-manage #filters > .filter-selection:last-child { grid-column: 1 / -1; }
+.compact-layout #stylus-manage .filter-selection > #only-updates > input { margin-right: 10px; }
+.compact-layout #stylus-manage .filter-selection .select-wrapper { flex: 1 1 auto; min-width: 0; }
+.compact-layout #stylus-manage .filter-selection select { width: 100%; min-width: 0; font-size: 13px; }
 .compact-layout #stylus-manage #wide-inputs { gap: 10px; }
 .compact-layout #stylus-manage #wide-inputs > * { gap: 8px; }
 .compact-layout #stylus-manage #search-wrapper > input { flex: 1 1 auto; width: auto; }
+.compact-layout #stylus-manage #actions { display: block; }
 .compact-layout #stylus-manage #actions main {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
   min-width: 0;
   margin: 0;
 }
@@ -709,8 +724,9 @@ html #message-box-buttons button:not(:first-child) {
 .compact-layout #stylus-manage #actions details + main button.icon {
   position: relative;
   width: 100%;
-  height: 44px;
-  padding: 0 14px 0 14px !important;
+  height: auto;
+  min-height: 44px;
+  padding: 6px 12px !important;
   justify-content: flex-start;
   gap: 10px;
   border-radius: 14px !important;
@@ -722,10 +738,9 @@ html #message-box-buttons button:not(:first-child) {
   content: attr(title);
   order: 2;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font: 500 13px/1 var(--family);
+  text-align: left;
+  white-space: normal;
+  font: 500 13px/1.15 var(--family);
 }
 .compact-layout #stylus-manage #actions main button.icon > :is(i, svg) {
   position: static;
@@ -737,8 +752,8 @@ html #message-box-buttons button:not(:first-child) {
 }
 .compact-layout #stylus-manage #update-history-button::before { content: attr(title) !important; }
 .compact-layout #stylus-manage #actions a#add-style { display: block; }
-.compact-layout #stylus-manage #actions a#add-style > button { background: var(--md-primary) !important; color: var(--md-on-primary) !important; }
-.compact-layout #stylus-manage #actions a#add-style > button i { color: var(--md-on-primary) !important; }
+.compact-layout #stylus-manage #actions a#add-style > button { background: var(--md-accent) !important; color: var(--md-on-accent) !important; }
+.compact-layout #stylus-manage #actions a#add-style > button i { color: var(--md-on-accent) !important; }
 .compact-layout #stylus-manage #backup { display: contents; }
 .compact-layout #stylus-manage #backup > button:not(.icon) { width: 100%; height: 44px; border-radius: 14px !important; }
 .compact-layout #stylus-manage #backup > .split-btn { display: flex; width: 100%; }
@@ -746,6 +761,19 @@ html #message-box-buttons button:not(:first-child) {
 .compact-layout #stylus-manage #backup > .split-btn > button + button { height: 44px; }
 .compact-layout #stylus-manage #backup > p { grid-column: 1 / -1; }
 .compact-layout #stylus-manage #links main { gap: 4px 16px; }
+.compact-layout:not(.empty) #stylus-manage #links summary::after { content: "Links"; }
+.compact-layout #stylus-manage #backup-hint summary::after { content: "Backup reminder"; }
+.compact-layout:not(.empty) #stylus-manage #links summary::after,
+.compact-layout #stylus-manage #backup-hint summary::after {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 14px;
+  background: var(--md-surface-v);
+  color: var(--md-text-2);
+  font: 500 12px/1 var(--family);
+}
+.compact-layout #stylus-manage #links summary h2::after { content: none; }
+.compact-layout #stylus-manage :is(#links, #backup-hint) details { gap: 8px; }
 .compact-layout #stylus-manage #disableAll-label { margin: 0 0 4px; display: flex; align-items: center; gap: 4px; }
 
 .compact-layout #stylus-manage .entry {
@@ -813,7 +841,8 @@ html #message-box-buttons button:not(:first-child) {
   color: var(--md-text);
   font-size: 12px;
 }
-.compact-layout #stylus-manage .has-favicons .entry .target { padding-left: 28px !important; }
+.compact-layout.has-favicons #stylus-manage .entry .target { padding-left: 28px !important; }
+.compact-layout #stylus-manage .entry.disabled .target { background: var(--md-surface); }
 .compact-layout #stylus-manage .entry .target img {
   position: absolute;
   left: 7px;
@@ -858,8 +887,8 @@ html.mobile #stylus-popup { min-width: 100% !important; max-width: none !importa
 #stylus-popup .style-name { font-size: 14px; }
 .touch #stylus-popup .style-name { font-size: 15px; }
 #stylus-popup #toggler { background: var(--md-surface-v); border-bottom: 0; }
-#stylus-popup #main-actions { background: var(--md-primary-c); border-bottom: 0; }
-#stylus-popup #main-actions a, #stylus-popup #main-actions i { color: var(--md-on-primary-c); }
+#stylus-popup #main-actions { background: var(--md-accent-c); border-bottom: 0; }
+#stylus-popup #main-actions a, #stylus-popup #main-actions i { color: var(--md-on-accent-c); }
 #stylus-popup #write-style { font-weight: 500; }
 #stylus-popup #popup-options {
   background: var(--md-surface);
@@ -881,7 +910,24 @@ html.mobile #stylus-popup { min-width: 100% !important; max-width: none !importa
 }
 #stylus-popup #popup-options a:active { background: var(--md-press); }
 #stylus-popup #popup-options a i, #stylus-popup #popup-options a svg { color: var(--md-primary); }
-#stylus-popup #disableAll-label { border-left: 0; }
+#stylus-popup #disableAll-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border-left: 0;
+}
+#stylus-popup #disableAll-label img {
+  position: static;
+  order: -1;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  filter: none;
+}
+#stylus-popup #disableAll { color: var(--md-outline); }
+html #stylus-popup #disableAll::after { content: ""; }
 #stylus-popup #menu { border-radius: 12px; box-shadow: var(--md-elev2); }
 
 /* ===== install-usercss ===== */
