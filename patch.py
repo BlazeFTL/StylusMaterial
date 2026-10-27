@@ -8,6 +8,7 @@ Run in the root of your Stylus fork checkout:
     python patch.py --build         # apply, pnpm install, build Firefox MV2, pack .xpi
     python patch.py --no-bump       # keep version as is
     python patch.py --id "{uuid}" --name "Stylus Material"   # fork identity (optional)
+    python patch.py --update-url URL --build-number N         # auto-update (CI)
 
 Safe to re-run: every edit is skipped when already applied.
 """
@@ -1454,6 +1455,7 @@ async function paste() {
   }
   if (text == null) {
     cm.focus();
+    cm.execCommand('selectAll');
     let ok = false;
     try {
       ok = document.execCommand('paste');
@@ -1467,7 +1469,12 @@ async function paste() {
     snack('Clipboard is empty');
     return;
   }
-  cm.replaceSelection(text, 'end');
+  cm.operation(() => {
+    const last = cm.lastLine();
+    cm.replaceRange(text, {line: cm.firstLine(), ch: 0}, {line: last, ch: cm.getLine(last).length}, 'paste');
+    const end = cm.lastLine();
+    cm.setCursor({line: end, ch: cm.getLine(end).length});
+  });
   cm.focus();
   snack(`Pasted ${text.length} chars`);
 }
@@ -1777,21 +1784,31 @@ def apply(root, args):
     print('== manifest / version')
     P.edit('src/manifest.json', '"alarms",\n', '"alarms",\n    "clipboardRead",\n    "clipboardWrite",\n',
            marker='"clipboardRead"')
-    if not args.no_bump:
-        pj = P.path('package.json')
-        m = re.search(r'"version":\s*"([^"]+)"', read(pj))
-        if m:
-            new = bump_minor(m.group(1))
-            P.edit('package.json', f'"version": "{m.group(1)}"', f'"version": "{new}"')
-            mj = P.path('src/manifest.json')
-            mm = re.search(r'"version":\s*"([^"]+)"', read(mj))
-            if mm and mm.group(1) != new:
-                P.edit('src/manifest.json', f'"version": "{mm.group(1)}"', f'"version": "{new}"')
-            log('ver', f'{m.group(1)} -> {new}')
+    pj = P.path('package.json')
+    m = re.search(r'"version":\s*"([^"]+)"', read(pj))
+    if m and (not args.no_bump or args.build_number is not None):
+        old = m.group(1)
+        new = old if args.no_bump else bump_minor(old)
+        if args.build_number is not None:
+            core = re.match(r'^\d+\.\d+\.\d+', new)
+            new = f'{core.group(0) if core else new}.{args.build_number}'
+        if new != old:
+            P.edit('package.json', f'"version": "{old}"', f'"version": "{new}"')
+        mj = P.path('src/manifest.json')
+        mm = re.search(r'"version":\s*"([^"]+)"', read(mj))
+        if mm and mm.group(1) != new:
+            P.edit('src/manifest.json', f'"version": "{mm.group(1)}"', f'"version": "{new}"')
+        log('ver', f'{old} -> {new}')
     if args.name:
         P.edit('src/manifest.json', r'^(\{\s*"name":\s*)"[^"]*"', rf'\1"{args.name}"', regex=True)
     if args.id:
         P.edit('src/manifest-mv2-firefox.json', r'("id":\s*)"[^"]*"', rf'\1"{args.id}"', regex=True)
+    if args.update_url:
+        mf = 'src/manifest-mv2-firefox.json'
+        if '"update_url"' in read(P.path(mf)):
+            P.edit(mf, r'("update_url":\s*)"[^"]*"', rf'\1"{args.update_url}"', regex=True)
+        else:
+            P.edit(mf, r'("gecko":\s*\{)', rf'\1\n      "update_url": "{args.update_url}",', regex=True)
 
 
 def run(cmd, cwd, **kw):
@@ -1832,6 +1849,8 @@ def main():
     ap.add_argument('--no-bump', action='store_true', help='do not bump the minor version')
     ap.add_argument('--id', help='gecko add-on id for src/manifest-mv2-firefox.json')
     ap.add_argument('--name', help='extension name for src/manifest.json')
+    ap.add_argument('--update-url', help='gecko update_url (Firefox auto-update manifest)')
+    ap.add_argument('--build-number', type=int, help='append as 4th version part (must grow every release)')
     ap.add_argument('--strict', action='store_true', help='exit 1 if any anchor was not found')
     args = ap.parse_args()
 
