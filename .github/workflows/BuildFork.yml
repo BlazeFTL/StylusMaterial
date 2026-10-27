@@ -1,6 +1,8 @@
-name: build-xpi
+name: sync-build-release
 
 on:
+  schedule:
+    - cron: '17 3 * * *'
   workflow_dispatch:
     inputs:
       bump:
@@ -23,10 +25,17 @@ on:
     branches: [master]
     paths:
       - patch.py
-      - .github/workflows/build-xpi.yml
+      - .github/workflows/BuildFork.yml
 
 permissions:
   contents: write
+
+concurrency:
+  group: sync-build-release
+  cancel-in-progress: false
+
+env:
+  UPSTREAM: https://github.com/openstyles/stylus.git
 
 jobs:
   build:
@@ -35,52 +44,113 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          fetch-tags: true
+
+      - name: Sync upstream
+        id: sync
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          set -eu
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          branch=$(git ls-remote --symref "$UPSTREAM" HEAD | awk '/^ref:/ {sub("refs/heads/", "", $2); print $2}')
+          git remote add upstream "$UPSTREAM"
+          git fetch --no-tags upstream "$branch"
+          up=$(git rev-parse --short FETCH_HEAD)
+          ahead=$(git rev-list --count HEAD..FETCH_HEAD)
+          echo "upstream $branch @ $up, $ahead new commit(s)"
+
+          if [ "$ahead" -gt 0 ]; then
+            if ! git merge --no-commit --no-ff FETCH_HEAD; then
+              git merge --abort || true
+              echo "::error::Merge conflict with upstream. Sync the fork manually."
+              exit 1
+            fi
+            # GITHUB_TOKEN cannot push workflow-file changes: keep this fork's workflows as they are
+            git checkout HEAD -- .github/workflows
+            git diff --cached --name-only --diff-filter=A -- .github/workflows | xargs -r git rm -qf --
+            git commit -m "Merge upstream ${branch} @ ${up}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
+          head=$(git rev-parse HEAD)
+          last=$(gh release view --json targetCommitish --jq .targetCommitish 2>/dev/null || true)
+          go=false
+          if [ "$EVENT" != schedule ] || [ "$head" != "$last" ]; then go=true; fi
+          echo "head=$head" >> "$GITHUB_OUTPUT"
+          echo "up=$up" >> "$GITHUB_OUTPUT"
+          echo "go=$go" >> "$GITHUB_OUTPUT"
+          echo "build needed: $go"
 
       - uses: actions/setup-python@v6
+        if: steps.sync.outputs.go == 'true'
         with:
           python-version: '3.x'
 
       - uses: pnpm/action-setup@v6
+        if: steps.sync.outputs.go == 'true'
 
       - uses: actions/setup-node@v6
+        if: steps.sync.outputs.go == 'true'
         with:
           node-version-file: package.json
           cache: pnpm
 
-      - run: pnpm install --frozen-lockfile
+      - name: Install
+        if: steps.sync.outputs.go == 'true'
+        run: pnpm install --frozen-lockfile
 
       - name: Patch and build
+        if: steps.sync.outputs.go == 'true'
         env:
           BUMP: ${{ inputs.bump }}
-          ADDON_ID: ${{ inputs.addon_id }}
-          EXT_NAME: ${{ inputs.ext_name }}
+          ADDON_ID: ${{ inputs.addon_id || vars.ADDON_ID }}
+          EXT_NAME: ${{ inputs.ext_name || vars.EXT_NAME }}
         run: |
-          args=(--build)
+          set -eu
+          build_num=$(( ($(date -u +%s) - 1767225600) / 60 ))
+          args=(--build --strict --build-number "$build_num")
+          args+=(--update-url "https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/updates.json")
           if [ "$BUMP" = "false" ]; then args+=(--no-bump); fi
           if [ -n "$ADDON_ID" ]; then args+=(--id "$ADDON_ID"); fi
           if [ -n "$EXT_NAME" ]; then args+=(--name "$EXT_NAME"); fi
           python patch.py "${args[@]}"
 
-      - name: Locate xpi
+      - name: Make updates.json
+        if: steps.sync.outputs.go == 'true'
         run: |
+          set -eu
           xpi=$(ls stylus-material-*.xpi | head -n1)
           ver=${xpi#stylus-material-}
           ver=${ver%.xpi}
+          id=$(unzip -p "$xpi" manifest.json | jq -r '.browser_specific_settings.gecko.id')
+          hash=$(sha256sum "$xpi" | cut -d' ' -f1)
+          link="https://github.com/${GITHUB_REPOSITORY}/releases/download/v${ver}/${xpi}"
+          jq -n --arg id "$id" --arg v "$ver" --arg l "$link" --arg h "sha256:$hash" \
+            '{addons: {($id): {updates: [{version: $v, update_link: $l, update_hash: $h}]}}}' > updates.json
+          cat updates.json
           echo "XPI=$xpi" >> "$GITHUB_ENV"
           echo "VER=$ver" >> "$GITHUB_ENV"
 
       - uses: actions/upload-artifact@v7
+        if: steps.sync.outputs.go == 'true'
         with:
           path: ${{ env.XPI }}
           archive: false
           if-no-files-found: error
 
       - name: Release
-        if: ${{ inputs.release }}
+        if: ${{ steps.sync.outputs.go == 'true' && (github.event_name != 'workflow_dispatch' || inputs.release) }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ env.VER }}
           name: Stylus Material ${{ env.VER }}
-          target_commitish: ${{ github.sha }}
-          files: ${{ env.XPI }}
+          body: Upstream openstyles/stylus@${{ steps.sync.outputs.up }}
+          target_commitish: ${{ steps.sync.outputs.head }}
+          make_latest: true
+          fail_on_unmatched_files: true
+          files: |
+            ${{ env.XPI }}
+            updates.json
