@@ -22,35 +22,35 @@ import urllib.parse
 import zipfile
 from pathlib import Path
 
-MATERIAL_CSS = r'''/* Material light theme + mobile layout (added by patch.py) */
+MATERIAL_CSS = r'''/* Flat Material mobile theme: Violentmonkey layout + Gboard-style settings (added by patch.py) */
 
-/* ===== tokens (peach & purple) ===== */
+/* ===== tokens ===== */
 :root {
-  --md-primary: #8400ff;
+  --md-primary: #0b57d0;
   --md-on-primary: #fff;
-  --md-primary-c: #f1e4ff;
-  --md-on-primary-c: #3a0873;
-  --md-accent: #ff645e;
-  --md-on-accent: #2a0300;
-  --md-accent-c: #ffd6c4;
-  --md-on-accent-c: #3d1306;
-  --md-lav: #9191ff;
-  --md-grad: linear-gradient(120deg, #910fff 0%, #ff645e 100%);
-  --md-cta: var(--md-grad);
+  --md-primary-c: #d3e3fd;
+  --md-on-primary-c: #041e49;
+  --md-accent: #0b57d0;
+  --md-on-accent: #fff;
+  --md-accent-c: #c2d7fa;
+  --md-on-accent-c: #041e49;
+  --md-lav: #5b8def;
+  --md-grad: var(--md-primary);
+  --md-cta: var(--md-primary);
   --md-on-cta: #fff;
   --md-surface: #fff;
-  --md-bg: #fff8f4;
-  --md-surface-v: #ffeee6;
-  --md-outline: #85798f;
-  --md-outline-v: #f1e2ea;
-  --md-text: #000004;
-  --md-text-2: #41364d;
-  --md-danger: #d93636;
-  --md-hover: rgba(132, 0, 255, .06);
-  --md-press: rgba(132, 0, 255, .12);
-  --md-elev1: 0 1px 2px rgba(80, 20, 120, .14), 0 1px 4px 1px rgba(80, 20, 120, .06);
-  --md-elev2: 0 2px 6px rgba(80, 20, 120, .18), 0 6px 16px 2px rgba(80, 20, 120, .1);
-  --family: Inter, Roboto, "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --md-bg: #eef1f9;
+  --md-surface-v: #e3e7f2;
+  --md-outline: #747780;
+  --md-outline-v: #d5d9e5;
+  --md-text: #1a1c22;
+  --md-text-2: #4a4e59;
+  --md-danger: #b3261e;
+  --md-hover: rgba(11, 87, 208, .07);
+  --md-press: rgba(11, 87, 208, .13);
+  --md-elev1: 0 1px 2px rgba(20, 30, 70, .10), 0 1px 3px 1px rgba(20, 30, 70, .05);
+  --md-elev2: 0 2px 6px rgba(20, 30, 70, .16), 0 8px 20px 2px rgba(20, 30, 70, .10);
+  --family: Roboto, "Google Sans", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --font-size: 13px;
   --input-height: 32px;
   --icon-font-size: 20px;
@@ -66,37 +66,40 @@ MATERIAL_CSS = r'''/* Material light theme + mobile layout (added by patch.py) *
   --accent-1: var(--md-primary);
   --accent-2: var(--md-lav);
   --accent-3: var(--md-surface-v);
-  --accent-4: #fff0e8;
-  --accent-5: #fffaf7;
+  --accent-4: #eaf0fc;
+  --accent-5: #f3f6fd;
   --header-bg: var(--md-surface);
-  --zebra: rgba(132, 0, 255, .04);
+  --zebra: rgba(11, 87, 208, .04);
   --red1: var(--md-danger);
   --focus-color1: var(--md-primary);
   --focus-color2: transparent;
 }
 :root[data-ui-theme="dark"] {
-  --md-primary: #d0b3ff;
-  --md-on-primary: #2d0060;
-  --md-primary-c: #45217f;
-  --md-on-primary-c: #eaddff;
-  --md-accent: #ff8a84;
-  --md-on-accent: #3d0a07;
-  --md-accent-c: #6b2a28;
-  --md-on-accent-c: #ffdad4;
-  --md-lav: #b4b4ff;
-  --md-grad: linear-gradient(120deg, #b98cff 0%, #ff8a84 100%);
-  --md-on-cta: #1e0036;
-  --md-surface: var(--c100);
-  --md-bg: var(--c99);
-  --md-surface-v: var(--c90);
-  --md-outline: var(--c45);
-  --md-outline-v: var(--c75);
-  --md-text: var(--fg);
-  --md-text-2: var(--c30);
-  --md-danger: var(--red1);
-  --md-hover: rgba(255, 255, 255, .07);
-  --md-press: rgba(255, 255, 255, .13);
-  --md-elev1: 0 1px 3px rgba(0, 0, 0, .6);
+  --md-primary: #a8c7fa;
+  --md-on-primary: #062e6f;
+  --md-primary-c: #0842a0;
+  --md-on-primary-c: #d3e3fd;
+  --md-accent: #a8c7fa;
+  --md-on-accent: #062e6f;
+  --md-accent-c: #0b3a82;
+  --md-on-accent-c: #d3e3fd;
+  --md-lav: #8ab4f8;
+  --md-grad: var(--md-primary);
+  --md-cta: var(--md-primary);
+  --md-on-cta: #062e6f;
+  --md-surface: #1f2227;
+  --md-bg: #12141a;
+  --md-surface-v: #2c3038;
+  --md-outline: #8e9099;
+  --md-outline-v: #3a3e47;
+  --md-text: #e3e2e6;
+  --md-text-2: #c4c6d0;
+  --bg: var(--md-surface);
+  --fg: var(--md-text);
+  --md-danger: #f2b8b5;
+  --md-hover: rgba(168, 199, 250, .09);
+  --md-press: rgba(168, 199, 250, .16);
+  --md-elev1: 0 1px 3px rgba(0, 0, 0, .55);
   --md-elev2: 0 4px 16px rgba(0, 0, 0, .7);
   --focus-color1: var(--md-primary);
   --focus-color2: transparent;
@@ -223,7 +226,7 @@ html input[type=search]::-webkit-search-cancel-button { cursor: pointer; }
 html input[type=color] { border-radius: 8px !important; }
 
 /* ===== checkbox ===== */
-html input[type=checkbox]:not(.slider) {
+html input[type=checkbox]:not(.slider, .entry .style-name > input, #menu header input) {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -241,8 +244,8 @@ html input[type=checkbox]:not(.slider) {
   cursor: pointer;
   transition: background-color .12s, border-color .12s;
 }
-html input[type=checkbox]:not(.slider)::after,
-html input[type=checkbox]:not(.slider):checked::after {
+html input[type=checkbox]:not(.slider, .entry .style-name > input, #menu header input)::after,
+html input[type=checkbox]:not(.slider, .entry .style-name > input, #menu header input):checked::after {
   content: "";
   position: absolute;
   left: 4px;
@@ -257,42 +260,50 @@ html input[type=checkbox]:not(.slider):checked::after {
   transform: rotate(45deg) scale(0);
   transition: transform .12s;
 }
-html input[type=checkbox]:not(.slider):checked {
+html input[type=checkbox]:not(.slider, .entry .style-name > input, #menu header input):checked {
   background: var(--md-primary) !important;
   border-color: var(--md-primary) !important;
 }
-html input[type=checkbox]:not(.slider):checked::after { transform: rotate(45deg) scale(1); }
-html input[type=checkbox]:not(.slider):hover:not(:disabled) { border-color: var(--md-primary) !important; }
-html input[type=checkbox]:not(.slider):disabled { opacity: .45; cursor: default; }
-html input[type=checkbox]:not(.slider) + span { color: inherit; }
+html input[type=checkbox]:not(.slider, .entry .style-name > input, #menu header input):checked::after { transform: rotate(45deg) scale(1); }
+html input[type=checkbox]:not(.slider, .entry .style-name > input, #menu header input):hover:not(:disabled) { border-color: var(--md-primary) !important; }
+html input[type=checkbox]:not(.slider, .entry .style-name > input, #menu header input):disabled { opacity: .45; cursor: default; }
+html input[type=checkbox]:not(.slider, .entry .style-name > input, #menu header input) + span { color: inherit; }
 
-/* ===== switch ===== */
-html input.slider {
+/* ===== switch (M3 geometry, check icon in the thumb) ===== */
+html input.slider,
+html .entry .style-name > input[type=checkbox],
+html #menu header input[type=checkbox] {
+  --sw-h: 32px;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   box-sizing: border-box;
   position: relative;
   display: inline-block;
-  flex: 0 0 44px;
-  width: 44px !important;
-  height: 24px !important;
+  flex: 0 0 auto;
+  width: calc(var(--sw-h) * 1.625) !important;
+  height: var(--sw-h) !important;
   margin: 0 !important;
   vertical-align: middle;
   border: 2px solid var(--md-outline) !important;
-  border-radius: 12px !important;
+  border-radius: calc(var(--sw-h) / 2) !important;
   background: var(--md-surface-v) !important;
   box-shadow: none !important;
   cursor: pointer;
   transition: background-color .2s, border-color .2s;
 }
-html input.slider::after {
-  content: "";
+html input.slider::before,
+html .entry .style-name > input[type=checkbox]::before,
+html #menu header input[type=checkbox]::before { display: none !important; }
+html input.slider::after,
+html .entry .style-name > input[type=checkbox]::after,
+html #menu header input[type=checkbox]::after {
+  content: "" !important;
   position: absolute;
   top: 50%;
-  left: 4px;
-  width: 10px;
-  height: 10px;
+  left: calc(var(--sw-h) * .25 - 2px);
+  width: calc(var(--sw-h) * .5) !important;
+  height: calc(var(--sw-h) * .5) !important;
   margin: 0;
   border: 0;
   border-radius: 50%;
@@ -301,19 +312,55 @@ html input.slider::after {
   transform: translateY(-50%);
   transition: left .2s, width .2s, height .2s, background-color .2s;
 }
-html input.slider:checked {
+html input.slider:checked,
+html .entry .style-name > input[type=checkbox]:checked,
+html #menu header input[type=checkbox]:checked {
   background: var(--md-primary) !important;
   border-color: var(--md-primary) !important;
 }
-html input.slider:checked::after {
-  left: 20px;
-  width: 16px;
-  height: 16px;
-  background: var(--md-on-primary);
-  border: 0;
+html input.slider:checked::after,
+html .entry .style-name > input[type=checkbox]:checked::after,
+html #menu header input[type=checkbox]:checked::after {
+  left: calc(var(--sw-h) * .75 - 2px);
+  width: calc(var(--sw-h) * .75) !important;
+  height: calc(var(--sw-h) * .75) !important;
+  background: url("@@CHECK_L@@") center / 64% no-repeat, var(--md-on-primary);
 }
-html input.slider:focus-visible { outline: 2px solid var(--md-primary); outline-offset: 2px; }
-html input.slider:disabled { opacity: .45; cursor: default; }
+:root[data-ui-theme="dark"] input.slider:checked::after,
+:root[data-ui-theme="dark"] .entry .style-name > input[type=checkbox]:checked::after,
+:root[data-ui-theme="dark"] #menu header input[type=checkbox]:checked::after {
+  background: url("@@CHECK_D@@") center / 64% no-repeat, var(--md-on-primary);
+}
+html input.slider:focus-visible,
+html .entry .style-name > input[type=checkbox]:focus-visible,
+html #menu header input[type=checkbox]:focus-visible {
+  outline: 2px solid var(--md-primary);
+  outline-offset: 2px;
+}
+html input.slider:disabled,
+html .entry .style-name > input[type=checkbox]:disabled,
+html #menu header input[type=checkbox]:disabled { opacity: .45; cursor: default; }
+html .entry .style-name > input[type=checkbox],
+html #menu header input[type=checkbox] { --sw-h: 26px; }
+
+/* master switch: the checkbox is "disable all", so the switch reads inverted (on = Stylus active) */
+html #disableAll#disableAll:not(:checked) { background: var(--md-primary) !important; border-color: var(--md-primary) !important; }
+html #disableAll#disableAll:not(:checked)::after {
+  left: calc(var(--sw-h) * .75 - 2px);
+  width: calc(var(--sw-h) * .75) !important;
+  height: calc(var(--sw-h) * .75) !important;
+  background: url("@@CHECK_L@@") center / 64% no-repeat, var(--md-on-primary);
+}
+:root[data-ui-theme="dark"] #disableAll#disableAll:not(:checked)::after { background: url("@@CHECK_D@@") center / 64% no-repeat, var(--md-on-primary); }
+html #disableAll#disableAll:checked { background: var(--md-surface-v) !important; border-color: var(--md-outline) !important; }
+html #disableAll#disableAll:checked::after {
+  left: calc(var(--sw-h) * .25 - 2px);
+  width: calc(var(--sw-h) * .5) !important;
+  height: calc(var(--sw-h) * .5) !important;
+  background: var(--md-outline);
+}
+
+html #stylus-edit input.slider.slider { --sw-h: 28px; }
 
 /* ===== radio ===== */
 html input[type=radio] {
@@ -563,56 +610,82 @@ html #message-box-buttons button:not(:first-child) {
 .compact-layout #stylus-edit #lint:not([open]) { padding: 0; }
 .compact-layout #stylus-edit #toc, .compact-layout #stylus-edit .lint-report-container { max-width: 80vw; }
 
-/* ===== options page ===== */
-#stylus-options { background: var(--md-bg); color: var(--md-text); padding-bottom: calc(var(--input-height) + 28px + env(safe-area-inset-bottom, 0px)); }
+/* ===== options page (Gboard-style settings) ===== */
+html.mobile:has(> body#stylus-options) { padding: 0 !important; }
+html.mobile #stylus-options {
+  width: 100% !important;
+  max-width: none;
+  height: var(--100dvh, 100dvh);
+  max-height: var(--100dvh, 100dvh);
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0;
+  box-shadow: none !important;
+}
+html.mobile #stylus-options main { flex: 1 1 auto; min-height: 0; }
+#stylus-options label:has(> #manage\.newUI) { display: none; }
+#stylus-options { background: var(--md-bg); color: var(--md-text); }
 #stylus-options header {
-  background: var(--md-grad) !important;
-  color: var(--md-on-cta);
-  padding: 12px 16px;
-  min-height: 56px;
-  box-sizing: border-box;
-  border: 0;
-  box-shadow: var(--md-elev1);
   position: relative;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-sizing: border-box;
+  min-height: 72px;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 8px 8px 20px;
+  border: 0;
+  background: var(--md-bg) !important;
+  box-shadow: none;
+  color: var(--md-text);
 }
-#stylus-options header h1 { font-size: 20px; font-weight: 500; }
+#stylus-options header img { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 8px; }
+#stylus-options header h1 { flex: 1 1 auto; margin: 0; color: var(--md-text); font: 400 28px/1.2 var(--family); }
 #stylus-options header i {
-  color: var(--md-on-cta) !important;
-  font-size: 24px;
-  padding: 8px;
+  flex: 0 0 auto;
+  box-sizing: content-box;
+  padding: 12px;
   border-radius: 50%;
+  color: var(--md-text-2) !important;
+  font-size: 24px;
   cursor: pointer;
 }
-#stylus-options header i:hover, #stylus-options header i:active { background: rgba(255, 255, 255, .2); }
-#stylus-options main { background: var(--md-bg); padding: 8px; box-sizing: border-box; }
+#stylus-options header i:active { background: var(--md-press); }
+#stylus-options main { box-sizing: border-box; padding: 0 12px 28px; background: var(--md-bg); }
 #stylus-options .block {
-  flex-direction: column;
-  align-items: stretch;
-  margin: 8px;
-  padding: 12px 16px 8px;
-  border: 0 !important;
-  border-radius: 16px;
-  background: var(--md-surface);
-  box-shadow: var(--md-elev1);
-}
-#stylus-options h2 {
-  flex: 0 0 auto;
-  width: auto;
-  margin: 0 0 4px;
+  display: block;
+  margin: 0 0 6px;
   padding: 0;
+  overflow: visible;
+  border: 0 !important;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+#stylus-options .block > h2 {
+  position: static;
+  margin: 0;
+  padding: 18px 16px 8px;
+  border: 0;
   background: none;
   color: var(--md-primary);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: .06em;
-  text-transform: uppercase;
+  font: 500 14px/1.3 var(--family);
+  letter-spacing: .01em;
+  text-transform: none;
 }
-#stylus-options .block > * { padding-left: 0; padding-right: 0; }
-#stylus-options .items { width: 100%; }
+#stylus-options .block > h2::before { content: none; }
+#stylus-options .block > :not(h2) {
+  box-sizing: border-box;
+  padding-left: 16px;
+  padding-right: 16px;
+  border-radius: 24px;
+  background: var(--md-surface);
+}
+#stylus-options .items { width: auto; padding-top: 4px; padding-bottom: 4px; }
 #stylus-options .items > label,
-#stylus-options .items .radio-wrapper { min-height: 48px; }
+#stylus-options .items .radio-wrapper { min-height: 56px; }
 #stylus-options .items.swap > label {
+  display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
@@ -621,6 +694,9 @@ html #message-box-buttons button:not(:first-child) {
   order: 0 !important;
   flex: 1 1 auto;
   margin: 0;
+  color: var(--md-text);
+  font-size: 16px;
+  line-height: 1.3;
 }
 #stylus-options .items.swap > label > input,
 #stylus-options .items.swap > label > input[type=number] {
@@ -628,55 +704,54 @@ html #message-box-buttons button:not(:first-child) {
   flex: 0 0 auto;
   margin: 0 !important;
 }
-#stylus-options .items.swap > label > input[type=number] {
-  width: 84px;
-  text-align: center;
-}
-#stylus-options .items.swap > label > input[type=color] {
-  width: 56px;
-  height: 36px;
-  padding: 2px !important;
-}
-#stylus-options input[type=number] { border: 1px solid var(--md-outline) !important; padding: 0 8px !important; }
-#stylus-options label.radio-wrapper { justify-content: flex-start; flex-wrap: wrap; row-gap: 2px; }
+#stylus-options .items.swap > label > input[type=number] { width: 84px; text-align: center; }
+#stylus-options .items.swap > label > input[type=color] { width: 56px; height: 36px; padding: 2px !important; }
+#stylus-options input[type=number] { padding: 0 8px !important; }
 #stylus-options .items > label + label { border-top: 1px solid var(--md-outline-v); }
-#stylus-options .radio-wrapper { align-items: center; }
-#stylus-options input[type=time] { margin: 0 6px 0 0; width: 9.2em; min-width: 0; padding: 0 8px !important; }
+#stylus-options .items label, #stylus-options .items .radio-wrapper { font-size: 16px; line-height: 1.3; }
+#stylus-options label.radio-wrapper { align-items: center; justify-content: flex-start; flex-wrap: nowrap; row-gap: 2px; }
 #stylus-options .radio-wrapper + span { margin-left: 8px; }
-#stylus-options .sync-options > div { gap: 12px !important; }
+#stylus-options input[type=time] { width: 9.2em; min-width: 0; margin: 0 6px 0 0; padding: 0 8px !important; }
+#stylus-options label.radio-wrapper:has(.md-time-range) { flex-wrap: wrap; }
+#stylus-options .md-time-range {
+  display: flex;
+  flex: 1 0 calc(100% - 30px);
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  margin: 2px 0 12px 30px;
+}
+#stylus-options .md-time-range input[type=time] { flex: 1 1 0; width: auto; min-width: 0; margin: 0; }
+#stylus-options .md-time-range .md-to { flex: 0 0 auto; color: var(--md-text-2); font-size: 13px; }
+#stylus-options .sync-options > div { gap: 12px !important; padding-top: 12px; padding-bottom: 12px; }
 #stylus-options .sync-options[data-enabled] .actions { display: flex; flex-wrap: wrap; gap: 8px; }
 #stylus-options .drive-options input { height: var(--input-height); }
 #stylus-options textarea { border-color: var(--md-outline) !important; }
+#stylus-options #FOUC h2 { color: var(--md-danger); }
 #stylus-options footer {
   display: flex;
   gap: 8px;
   height: auto;
   padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
-  background: var(--md-surface) !important;
   border: 0 !important;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, .12);
+  background: var(--md-bg) !important;
+  box-shadow: none;
 }
-#stylus-options footer button { flex: 1 1 0; margin: 0 !important; padding: 0 8px !important; min-width: 0; }
-#stylus-options footer #manage { background: var(--md-cta) !important; color: var(--md-on-cta) !important; }
-#stylus-options footer #reset { background: transparent !important; color: var(--md-danger) !important; box-shadow: inset 0 0 0 1px var(--md-outline-v); }
-#stylus-options #FOUC h2 { color: var(--md-danger); }
+#stylus-options footer button { flex: 1 1 0; min-width: 0; margin: 0 !important; padding: 0 8px !important; }
+html #stylus-options footer #manage { background: var(--md-primary) !important; color: var(--md-on-primary) !important; }
+html #stylus-options footer #reset { background: var(--md-primary-c) !important; color: var(--md-danger) !important; }
 @media (max-width: 549px) {
   #stylus-options { width: 100%; border: 0; box-shadow: none; }
 }
 
 /* ===== manage page ===== */
 #stylus-manage { background: var(--md-bg); color: var(--md-text); }
-#stylus-manage #header {
-  background: var(--md-surface) !important;
-  box-shadow: var(--md-elev1);
-  border-right: 0;
-}
-#stylus-manage #header h1 { font-size: 22px; font-weight: 500; }
-#stylus-manage #stats { background: var(--md-primary); border-radius: 12px; padding: 2px 4px 2px 10px; }
 #stylus-manage #installed { background: transparent; }
-#stylus-manage .entry { background: var(--md-surface); }
-#stylus-manage .entry.odd { background: var(--md-surface); }
+#stylus-manage .select-wrapper { margin-left: 0; }
+#stylus-manage .select-wrapper::after { top: 50%; right: 6px; margin: 0; }
+#stylus-manage #wide-inputs .select-wrapper select { max-width: 100%; }
 #stylus-manage .style-info[data-type=version] { color: var(--md-text-2); }
+#stylus-manage .entry i { color: var(--md-text-2); }
 #stylus-manage .entry.usercss .style-name-link::after {
   background: var(--md-primary-c);
   color: var(--md-on-primary-c);
@@ -684,149 +759,363 @@ html #message-box-buttons button:not(:first-child) {
   padding: 2px 6px;
   font-weight: 500;
 }
-#stylus-manage .entry i { color: var(--md-text-2); }
-#stylus-manage .entry .actions a { border-radius: 50%; }
-#stylus-manage #search { height: var(--input-height); }
-#stylus-manage #wide-inputs .select-wrapper select { max-width: 100%; }
-#stylus-manage .select-wrapper { margin-left: 0; }
-#stylus-manage .select-wrapper::after { top: 50%; right: 6px; margin: 0; }
-#stylus-manage #header select { height: var(--input-height); padding: 0 30px 0 12px !important; }
 
-/* compact: header becomes a card, entries become cards */
+/* --- header = app bar + toolbar + search + chips --- */
 .compact-layout #stylus-manage #header {
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   width: 100% !important;
   height: auto;
-  padding: 12px 16px 16px;
+  padding: 0;
   overflow: visible;
   z-index: 5;
+  border: 0 !important;
+  border-radius: 0 0 20px 20px;
+  background: var(--md-surface) !important;
+  box-shadow: var(--md-elev1);
 }
-.compact-layout #stylus-manage #manage-settings { flex-flow: column; align-items: stretch; padding: 0; }
-.compact-layout #stylus-manage #installed { padding: 8px 12px 24px; flex-direction: column; flex-wrap: nowrap; gap: 10px; }
-.compact-layout #stylus-manage #manage-settings { gap: 12px; }
-.compact-layout #stylus-manage #filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.compact-layout #stylus-manage #filters > #stats { grid-column: 1 / -1; }
-.compact-layout #stylus-manage .filter-selection { left: 0; display: flex; align-items: center; gap: 8px; min-width: 0; min-height: 0; }
-.compact-layout #stylus-manage #header .filter-selection > label { margin: 0; padding: 0; }
-.compact-layout #stylus-manage .filter-selection > label > input { margin-right: 0; }
-.compact-layout #stylus-manage #filters > .filter-selection:last-child { grid-column: 1 / -1; }
-.compact-layout #stylus-manage .filter-selection > #only-updates > input { margin-right: 10px; }
-.compact-layout #stylus-manage .filter-selection .select-wrapper { flex: 1 1 auto; min-width: 0; }
-.compact-layout #stylus-manage .filter-selection select { width: 100%; min-width: 0; font-size: 13px; }
-.compact-layout #stylus-manage #wide-inputs { gap: 10px; }
-.compact-layout #stylus-manage #wide-inputs > * { gap: 8px; }
-.compact-layout #stylus-manage #search-wrapper > input { flex: 1 1 auto; width: auto; }
-.compact-layout #stylus-manage #actions { display: block; }
-.compact-layout #stylus-manage #actions main {
+.compact-layout #stylus-manage #header h1 {
+  display: flex;
+  visibility: visible;
+  grid-column: 1;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 8px;
+  background: none;
+  color: var(--md-text);
+  font: 500 21px/1.2 var(--family);
+}
+.compact-layout #stylus-manage #header h1::before {
+  content: "S";
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  width: 100%;
+  place-items: center;
+  flex: 0 0 32px;
+  height: 32px;
   box-sizing: border-box;
+  border: 2px solid #000;
+  border-radius: 9px;
+  background: #35f0d8;
+  color: #000;
+  font: 800 18px/1 var(--family);
+}
+.compact-layout #stylus-manage #header #disableAll-label {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 12px 4px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--md-danger) 14%, var(--md-surface));
+  color: var(--md-danger);
+  font-weight: 500;
+}
+.compact-layout #stylus-manage #header #disableAll-label input { --sw-h: 26px; margin: 0; }
+.compact-layout #stylus-manage #manage-settings {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-flow: column;
+  align-items: stretch;
+  gap: 10px;
+  padding: 0 12px 14px;
+}
+.compact-layout #stylus-manage #actions { order: 1; display: block; }
+.compact-layout #stylus-manage #wide-inputs { order: 2; gap: 8px; }
+.compact-layout #stylus-manage #filters { order: 3; }
+.compact-layout #stylus-manage #links { order: 4; }
+.compact-layout #stylus-manage #backup-hint { order: 5; }
+html:not(.all-disabled) #stylus-manage #disableAll-label:not([data-persist]) { display: none !important; }
+.compact-layout #stylus-manage #wide-inputs > * { gap: 8px; }
+.compact-layout #stylus-manage #header .filter-selection > label,
+.compact-layout #stylus-manage #header label { background: none; }
+
+/* toolbar: [+ New style] and round icon buttons, import/export below */
+.compact-layout #stylus-manage #actions > details { display: none; }
+.compact-layout #stylus-manage #actions main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
   min-width: 0;
   margin: 0;
+  box-sizing: border-box;
 }
 .compact-layout #stylus-manage #actions main > * { margin: 0; min-width: 0; }
-.compact-layout #stylus-manage #actions > details { display: none; }
-.compact-layout #stylus-manage #actions main button.icon,
-.compact-layout #stylus-manage #actions details + main button.icon {
+html #stylus-manage #actions main button.icon,
+html #stylus-manage #actions details + main button.icon {
   position: relative;
-  width: 100%;
-  height: auto;
-  min-height: 44px;
-  padding: 6px 12px !important;
-  justify-content: flex-start;
-  gap: 10px;
-  border-radius: 14px !important;
-  background: var(--md-surface-v) !important;
-  color: var(--md-text) !important;
-  border: 0 !important;
+  box-sizing: border-box;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  color: var(--md-text-2) !important;
 }
-.compact-layout #stylus-manage #actions main button.icon::before {
+html #stylus-manage #actions main button.icon::before { content: none; }
+html #stylus-manage #actions main button.icon:active { background: var(--md-press) !important; }
+#stylus-manage #actions main button.icon > :is(i, svg) { position: static; margin: 0; font-size: 23px; color: var(--md-text-2) !important; }
+#stylus-manage #check-all-updates { order: 1; }
+#stylus-manage #update-history-button { order: 2; }
+#stylus-manage #injection-order-button { order: 3; }
+#stylus-manage #sync-styles { order: 4; }
+#stylus-manage #manage-options-button { order: 5; }
+#stylus-manage #update-progress { position: absolute; right: 2px; bottom: 2px; font-size: 10px; }
+#stylus-manage #actions a#add-style {
+  order: 0;
+  display: inline-flex;
+  margin: 0 8px 0 0;
+}
+html #stylus-manage #actions a#add-style > button.icon {
+  width: auto !important;
+  min-width: 0;
+  height: 44px;
+  padding: 0 20px 0 14px !important;
+  gap: 8px;
+  border-radius: 22px !important;
+  background: var(--md-primary) !important;
+  color: var(--md-on-primary) !important;
+}
+html #stylus-manage #actions a#add-style > button.icon::before {
   content: attr(title);
   order: 2;
+  font: 500 14px/1 var(--family);
+  white-space: nowrap;
+}
+#stylus-manage #actions a#add-style > button.icon > i { order: 1; font-size: 22px; color: var(--md-on-primary) !important; }
+#stylus-manage #update-all { order: 6; flex: 1 0 100%; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+#stylus-manage #update-all:empty { display: none; }
+#stylus-manage #update-all > * { margin: 0; }
+#stylus-manage #update-all-no-updates { color: var(--md-text-2); font-size: 13px; }
+#stylus-manage #backup { order: 7; flex: 1 0 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+#stylus-manage #backup > #sync-styles { order: -1; }
+#stylus-manage #backup > button:not(.icon) { flex: 1 1 0; height: 40px; }
+#stylus-manage #backup > .split-btn { flex: 1 1 0; display: flex; min-width: 0; }
+#stylus-manage #backup > .split-btn > button:first-child { flex: 1 1 auto; }
+#stylus-manage #backup > p { flex: 1 0 100%; margin: 0; }
+#stylus-manage #backup > p:empty { display: none; }
+
+/* search pill + selects */
+#stylus-manage #search-wrapper { display: flex; align-items: center; gap: 8px; }
+html #stylus-manage #search {
+  flex: 1 1 auto;
+  width: auto;
   min-width: 0;
-  text-align: left;
-  white-space: normal;
-  font: 500 13px/1.15 var(--family);
+  height: 46px;
+  padding: 0 16px 0 46px !important;
+  border: 0 !important;
+  border-radius: 23px !important;
+  background: var(--md-surface-v) url("@@SEARCH@@") no-repeat 15px center / 22px !important;
+  color: var(--md-text);
+  font-size: 15px;
 }
-.compact-layout #stylus-manage #actions main button.icon > :is(i, svg) {
+html #stylus-manage #search:focus { box-shadow: 0 0 0 2px var(--md-primary) !important; }
+html #stylus-manage #search::placeholder { color: var(--md-text-2); opacity: 1; }
+:root[data-ui-theme="dark"] #stylus-manage #search { background-image: url("@@SEARCH_D@@") !important; }
+html #stylus-manage #header select {
+  height: 40px;
+  padding: 0 30px 0 14px !important;
+  border: 0 !important;
+  border-radius: 20px !important;
+  background: var(--md-primary-c) !important;
+  color: var(--md-on-primary-c);
+  font: 500 14px/1 var(--family);
+}
+#stylus-manage #search-wrapper .select-wrapper::after, #stylus-manage #sort-wrapper .select-wrapper::after { color: var(--md-on-primary-c); }
+#stylus-manage #sort-wrapper { display: flex; align-items: center; gap: 8px; }
+#stylus-manage #sort-wrapper .select-wrapper { flex: 1 1 auto; min-width: 0; }
+#stylus-manage #sort-wrapper select { width: 100%; }
+
+/* filters: scrolling chip row */
+.compact-layout #stylus-manage #filters {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  margin: 0 -12px;
+  padding: 2px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.compact-layout #stylus-manage #filters::-webkit-scrollbar { display: none; }
+.compact-layout #stylus-manage #filters > * { flex: 0 0 auto; }
+.compact-layout #stylus-manage .filter-selection {
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+  min-height: 0;
+  height: 38px;
+  padding: 0 2px 0 12px;
+  border: 1px solid var(--md-outline-v);
+  border-radius: 19px;
+  background: transparent;
+}
+.compact-layout #stylus-manage .filter-selection[hidden] { display: none; }
+.compact-layout #stylus-manage .filter-selection:has(input:checked) { border-color: transparent; background: var(--md-primary-c); }
+.compact-layout #stylus-manage .filter-selection > label { margin: 0; padding: 0 !important; display: flex; align-items: center; }
+.compact-layout #stylus-manage .filter-selection > label > input { margin: 0 !important; }
+.compact-layout #stylus-manage .filter-selection > #only-updates > input { margin-right: 10px !important; }
+.compact-layout #stylus-manage .filter-selection .select-wrapper { flex: 0 0 auto; min-width: 0; margin-left: 6px; }
+html #stylus-manage #header .filter-selection select {
+  width: auto;
+  min-width: 0;
+  height: 36px;
+  padding: 0 28px 0 4px !important;
+  background: transparent !important;
+  color: var(--md-text);
+  font: 400 14px/1 var(--family);
+}
+.compact-layout #stylus-manage .filter-selection:has(input:checked) select { color: var(--md-on-primary-c); }
+#stylus-manage #stats {
   position: static;
-  margin: 0;
-  order: 1;
-  flex: 0 0 auto;
-  font-size: 22px;
-  color: var(--md-primary) !important;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 38px;
+  box-sizing: border-box;
+  padding: 0 6px 0 14px;
+  border-radius: 19px;
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  font-size: 14px;
+  font-weight: 500;
 }
-.compact-layout #stylus-manage #update-history-button::before { content: attr(title) !important; }
-.compact-layout #stylus-manage #actions a#add-style { display: block; }
-.compact-layout #stylus-manage #actions a#add-style > button { background: var(--md-cta) !important; color: var(--md-on-cta) !important; }
-.compact-layout #stylus-manage #actions a#add-style > button i { color: var(--md-on-cta) !important; }
-.compact-layout #stylus-manage #backup { display: contents; }
-.compact-layout #stylus-manage #backup > button:not(.icon) { width: 100%; height: 44px; border-radius: 14px !important; }
-.compact-layout #stylus-manage #backup > .split-btn { display: flex; width: 100%; }
-.compact-layout #stylus-manage #backup > .split-btn > button:first-child { flex: 1 1 auto; height: 44px; }
-.compact-layout #stylus-manage #backup > .split-btn > button + button { height: 44px; }
-.compact-layout #stylus-manage #backup > p { grid-column: 1 / -1; }
-.compact-layout #stylus-manage #links main { gap: 4px 16px; }
+#stylus-manage #stats i { color: var(--md-on-primary); }
+
+/* links / backup reminder */
 .compact-layout:not(.empty) #stylus-manage #links summary::after { content: "Links"; }
 .compact-layout #stylus-manage #backup-hint summary::after { content: "Backup reminder"; }
 .compact-layout:not(.empty) #stylus-manage #links summary::after,
 .compact-layout #stylus-manage #backup-hint summary::after {
   display: inline-block;
-  padding: 6px 12px;
-  border-radius: 14px;
+  padding: 8px 14px;
+  border-radius: 16px;
   background: var(--md-surface-v);
   color: var(--md-text-2);
-  font: 500 12px/1 var(--family);
+  font: 500 13px/1 var(--family);
 }
 .compact-layout #stylus-manage #links summary h2::after { content: none; }
 .compact-layout #stylus-manage :is(#links, #backup-hint) details { gap: 8px; }
-.compact-layout #stylus-manage #disableAll-label { margin: 0 0 4px; display: flex; align-items: center; gap: 4px; }
+.compact-layout #stylus-manage #links main { gap: 4px 16px; }
+.compact-layout.empty #stylus-manage #links { padding: 20px 4px 28px; font-size: 14px; line-height: 1.3; }
+.compact-layout.empty #stylus-manage #links::before {
+  content: "Get styles";
+  display: block;
+  margin: 0 4px 12px;
+  color: var(--md-primary);
+  font: 500 13px/1 var(--family);
+  letter-spacing: .02em;
+}
+.compact-layout #stylus-manage #links main { display: flex; flex-flow: column; gap: 8px; }
+.compact-layout #stylus-manage #links main a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px;
+  border-radius: 16px;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev1);
+  color: var(--md-text);
+  font-weight: 500;
+  text-decoration: none;
+}
+.compact-layout #stylus-manage #links main a:active { background: var(--md-primary-c); }
+.compact-layout #stylus-manage #links main a::before {
+  content: "";
+  flex: 0 0 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: url("@@EXT_P@@") center / 20px no-repeat, var(--md-primary-c);
+}
+.compact-layout #stylus-manage #links main a::after {
+  content: "";
+  flex: 0 0 24px;
+  height: 24px;
+  margin-left: auto;
+  background: url("@@CHEV@@") center / 24px no-repeat;
+}
+.compact-layout #stylus-manage #links main a:has(> img)::before { display: none; }
+.compact-layout #stylus-manage #links main a.target { padding: 8px; line-height: 1.3; overflow: visible; }
+.compact-layout #stylus-manage #links main a.target > img {
+  position: static;
+  flex: 0 0 20px;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  padding: 9px;
+  border-radius: 12px;
+  background: var(--md-primary-c);
+}
+[data-ui-theme="dark"].compact-layout #stylus-manage #links main a::before {
+  background: url("@@EXT_D@@") center / 20px no-repeat, var(--md-primary-c);
+}
+.compact-layout #stylus-manage #backup-hint main {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--md-surface-v);
+  color: var(--md-text-2);
+  font-size: 13px;
+}
 
+/* --- style cards --- */
+.compact-layout #stylus-manage #installed { padding: 14px 12px 28px; flex-direction: column; flex-wrap: nowrap; gap: 10px; }
 .compact-layout #stylus-manage .entry {
   display: grid !important;
   grid-template-columns: auto auto minmax(0, 1fr) auto;
   align-items: center;
-  padding: 12px 8px 10px 14px !important;
-  border: 0 !important;
-  border-radius: 16px;
-  box-shadow: var(--md-elev1);
   width: 100%;
+  box-sizing: border-box;
+  padding: 10px 6px 12px 14px !important;
+  border: 0 !important;
+  border-radius: 18px;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev1);
   contain-intrinsic-block-size: auto 7em;
 }
+.compact-layout #stylus-manage .entry.odd { background: var(--md-surface); }
 .compact-layout #stylus-manage .entry > * { margin: 0; padding: 0; min-width: 0; max-width: none; flex: none; }
 .compact-layout #stylus-manage .entry > .style-name {
   grid-area: 1 / 1 / 2 / 4;
-  min-width: 0;
-  max-width: none;
-  padding: 4px 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
   font-size: 15px;
   font-weight: 500;
 }
+.compact-layout #stylus-manage .entry .style-name input { margin: 0 !important; flex: 0 0 auto; }
+.compact-layout #stylus-manage .entry .style-name-link { width: auto; flex: 1 1 auto; min-width: 0; color: var(--md-text); }
+.compact-layout #stylus-manage .entry .homepage { flex: 0 0 auto; margin-left: 0; }
 .compact-layout #stylus-manage .entry > .actions { grid-area: 1 / 4 / 2 / 5; justify-self: end; display: flex; align-items: center; }
 .compact-layout #stylus-manage .entry > .style-info[data-type=size] {
-  grid-area: 2 / 1;
+  grid-area: 2 / 1 / 3 / 4;
   justify-self: start;
-  padding: 0 10px 0 var(--name-padding-left, 14px);
-  font-size: 12px;
+  padding: 0 0 0 54px;
+  font-size: 12.5px;
   color: var(--md-text-2);
-  flex: none;
 }
 .compact-layout #stylus-manage .entry > .style-info[data-type=age] {
-  grid-area: 2 / 2;
+  grid-area: 2 / 1 / 3 / 4;
   justify-self: start;
-  font-size: 12px;
+  padding: 0 0 0 calc(54px + 5ch);
+  font-size: 12.5px;
   color: var(--md-text-2);
-  flex: none;
 }
 .compact-layout #stylus-manage .entry > .applies-to {
   grid-area: 3 / 1 / 4 / 5;
   position: relative;
-  padding: 8px 32px 0 0 !important;
-  flex: none;
+  padding: 10px 34px 0 0 !important;
 }
-.compact-layout #stylus-manage .entry .style-name-link { width: auto; flex: 1 1 auto; }
 .compact-layout #stylus-manage .entry .targets {
   display: flex;
   flex-wrap: wrap;
@@ -841,224 +1130,198 @@ html #message-box-buttons button:not(:first-child) {
   width: auto;
   min-width: 0;
   max-width: 100%;
-  height: 26px;
-  line-height: 26px;
-  padding: 0 10px !important;
+  height: 28px;
+  line-height: 28px;
+  padding: 0 11px !important;
   border-radius: 8px;
-  background: var(--md-surface-v);
+  background: var(--md-bg);
   color: var(--md-text);
-  font-size: 12px;
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.compact-layout.has-favicons #stylus-manage .entry .target { padding-left: 28px !important; }
-.compact-layout #stylus-manage .entry.disabled .target { background: var(--md-surface); }
-.compact-layout #stylus-manage .entry .target img {
-  position: absolute;
-  left: 7px;
-  top: 5px;
-  width: 16px;
-  height: 16px;
-  margin: 0;
-}
-.compact-layout #stylus-manage .entry .expander { right: 0; top: 4px; bottom: auto; width: 32px; height: 32px; justify-content: center; border-radius: 50%; }
-.compact-layout #stylus-manage .entry .actions > a, .compact-layout #stylus-manage .entry .actions > span {
-  width: 36px;
-  height: 36px;
+.compact-layout.has-favicons #stylus-manage .entry .target { padding-left: 30px !important; }
+.compact-layout #stylus-manage .entry .target img { position: absolute; left: 8px; top: 6px; width: 16px; height: 16px; margin: 0; }
+.compact-layout #stylus-manage .entry .expander { position: absolute; right: 0; top: 6px; bottom: auto; width: 32px; height: 32px; justify-content: center; border-radius: 50%; }
+.compact-layout #stylus-manage .entry .applies-to:not(.has-more) .expander { display: none; }
+.compact-layout #stylus-manage .entry .actions > a,
+.compact-layout #stylus-manage .entry .actions > span {
+  width: 40px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border-radius: 50%;
 }
 .compact-layout #stylus-manage .entry .actions a:active { background: var(--md-press); }
 .compact-layout #stylus-manage .entry .updater-icons { display: contents; }
-.compact-layout #stylus-manage .entry .updater-icons > * { display: none; width: 36px; height: 36px; align-items: center; justify-content: center; }
+.compact-layout #stylus-manage .entry .updater-icons > * { display: none; width: 40px; height: 40px; align-items: center; justify-content: center; }
 .compact-layout #stylus-manage .entry .can-update .update,
 .compact-layout #stylus-manage .entry.can-update .updater-icons .update,
 .compact-layout #stylus-manage .entry.no-update:not(.update-problem):not(.update-done) .up-to-date,
 .compact-layout #stylus-manage .entry.update-done .updated,
 .compact-layout #stylus-manage .entry.updatable:not(.checking-update) .updater-icons .check-update { display: inline-flex; }
-.compact-layout #stylus-manage .entry.disabled { box-shadow: none; background: var(--md-surface-v); }
+.compact-layout #stylus-manage .entry.updatable .updater-icons .update i { color: var(--md-primary); }
+.compact-layout #stylus-manage .entry.disabled { box-shadow: none; background: color-mix(in srgb, var(--md-surface) 55%, var(--md-bg)); }
 .compact-layout #stylus-manage .entry.disabled .style-name-link { color: var(--md-text-2); font-weight: 400; }
-.compact-layout #stylus-manage .entry .style-name input { margin: 0 12px 0 0; }
-.compact-layout #stylus-manage .entry .homepage { margin-left: 2px; }
+.compact-layout #stylus-manage .entry.disabled .target { background: var(--md-surface); }
 .compact-layout #stylus-manage .entry .updater-icons .update-note { display: none; }
 .compact-layout #stylus-manage .updater-icons > :not(.check-update)::after { max-width: 60vw; }
 
-/* ===== popup ===== */
-#stylus-popup { background: var(--md-surface); }
+/* ===== popup: top bar, find row, list (Violentmonkey layout) ===== */
 html.mobile:not(.sidebar) { width: 100% !important; }
 html.mobile #stylus-popup { min-width: 100% !important; max-width: none !important; width: 100%; }
-:root.touch { --entry-h: 48px; --outer-padding: 16px; --inner-padding: 28px; }
-#stylus-popup #installed .entry { border-radius: 0; }
-#stylus-popup .entry .actions > :not([hidden]) { border-radius: 50%; }
-#stylus-popup .entry .actions > :hover,
-#stylus-popup .entry .actions > :active { background: var(--md-hover); }
-#stylus-popup .entry .actions i { color: var(--md-text-2); }
-#stylus-popup .style-name { font-size: 14px; }
-.touch #stylus-popup .style-name { font-size: 15px; }
-#stylus-popup #toggler { background: var(--md-surface-v); border-bottom: 0; }
-#stylus-popup #main-actions { background: var(--md-accent-c); border-bottom: 0; }
-#stylus-popup #main-actions a, #stylus-popup #main-actions i { color: var(--md-on-accent-c); }
-#stylus-popup #write-style { font-weight: 500; }
-#stylus-popup #disableAll-label {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 16px;
-  border-left: 0;
-}
-#stylus-popup #disableAll-label img {
-  position: static;
-  order: -1;
-  width: 20px;
-  height: 20px;
-  margin: 0;
-  filter: none;
-}
-#stylus-popup #disableAll { color: var(--md-outline); }
-html #stylus-popup #disableAll::after { content: ""; }
-#stylus-popup #menu { border-radius: 12px; box-shadow: var(--md-elev2); }
-
-/* ===== install-usercss ===== */
-#stylus-install-usercss { background: var(--md-bg); }
-#stylus-install-usercss #header { background: var(--md-surface) !important; box-shadow: var(--md-elev1); }
-
-/* ===== embedded dialogs / config ===== */
-.config-dialog #message-box-contents { padding-top: 4px; }
-
-/* ============================================================
-   v2: peach & purple refresh + mobile fixes
-   ============================================================ */
-
-/* ----- popup: page ----- */
 html.mobile body#stylus-popup {
   min-height: var(--100dvh, 100dvh);
   background: var(--md-bg);
-}
-#stylus-popup { --border: 1px solid var(--md-outline-v); }
-#stylus-popup #unstylable {
-  margin: 16px 16px 8px;
-  padding: 16px;
-  border-radius: 20px;
-  background: var(--md-surface);
-  box-shadow: var(--md-elev1);
-}
-#stylus-popup #no-styles {
-  margin: 16px 16px 8px;
-  padding: 24px 20px;
-  border-radius: 24px;
-  background: var(--md-surface);
-  box-shadow: var(--md-elev1);
-  text-align: center;
-  line-height: 1.4;
-  color: var(--md-text-2);
-  cursor: pointer;
-}
-#stylus-popup #no-styles:hover { color: var(--md-text-2); }
-#stylus-popup #no-styles b { display: block; margin-top: 6px; color: var(--md-primary); font-weight: 600; }
-#stylus-popup #installed {
-  margin: 8px 16px;
-  border: 0 !important;
-  border-radius: 20px;
-  background: var(--md-surface);
-  box-shadow: var(--md-elev1);
-}
-#stylus-popup #installed:empty { display: none; }
-#stylus-popup #toggler {
-  margin: 8px 16px;
-  border: 0;
-  border-radius: 16px;
-  background: var(--md-surface);
-  box-shadow: var(--md-elev1);
-}
-#stylus-popup #main-actions {
-  margin: 8px 16px;
-  border: 0 !important;
-  border-radius: 16px;
-  background: var(--md-accent-c);
-  align-items: center;
-}
-#stylus-popup #disableAll-label { border-radius: 16px; }
-#stylus-popup .write-style-link:last-child { color: var(--md-on-accent-c); }
-
-/* ----- popup: bottom action bar with labels ----- */
-html body#stylus-popup #popup-options {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  flex: 0 0 auto;
-  margin-top: auto;
-  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
-  border: 0;
-  background: transparent;
-}
-#stylus-popup #popup-options > a,
-#stylus-popup #popup-options .split-btn {
-  min-width: 0;
-  height: 48px;
-  border-radius: 16px;
-  background: var(--md-surface);
-  box-shadow: var(--md-elev1);
-}
-#stylus-popup #popup-options a:not(.split-btn-menu > *) {
   color: var(--md-text);
-  font: 500 14px/1 var(--family);
-  text-decoration: none;
 }
-#stylus-popup #popup-options > a,
-#stylus-popup #popup-options .split-btn > a:first-child {
+html.touch body#stylus-popup { --entry-h: 58px; --outer-padding: 16px; --inner-padding: 28px; --border: 1px solid var(--md-outline-v); }
+#stylus-popup #pct { order: -20; }
+
+/* top bar */
+html body#stylus-popup #popup-options {
+  order: -10;
+  position: relative;
+  z-index: 3;
   display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-start;
-  gap: 14px;
-  padding: 0 12px 0 20px;
-  border-radius: 16px;
+  gap: 0;
+  margin: 0;
+  padding: calc(6px + env(safe-area-inset-top, 0px)) 8px 0 16px;
+  border: 0;
+  border-bottom: 1px solid var(--md-outline-v);
+  background: var(--md-surface);
+  box-shadow: none;
 }
-#stylus-popup #popup-options .split-btn { display: flex; align-items: stretch; position: relative; gap: 0; }
-#stylus-popup #popup-options .split-btn > a:first-child { flex: 1 1 auto; min-width: 0; border-radius: 16px 0 0 16px; }
-#stylus-popup #popup-options a.dropdown {
-  flex: 0 0 40px;
+#stylus-popup #popup-options .md-brand {
+  order: 0;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 12px;
   min-width: 0;
+  padding: 6px 0;
+  color: var(--md-text);
+  font: 500 20px/1.2 var(--family);
+}
+#stylus-popup #popup-options .md-brand img { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 8px; }
+#stylus-popup #disableAll-label {
+  order: 1;
+  position: static;
+  display: flex;
+  align-items: center;
+  margin: 0 6px 0 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+#stylus-popup #disableAll-label img, #stylus-popup #disableAll-label::after { display: none !important; }
+#stylus-popup #disableAll-label:hover { background: none; }
+html #stylus-popup #disableAll { --sw-h: 28px; color: inherit; justify-content: center; }
+html.all-disabled #stylus-popup #disableAll { border-color: var(--md-danger) !important; }
+#stylus-popup #popup-options > .split-btn:has(#popup-manage-button) { order: 2; display: flex; align-items: center; position: relative; margin-right: -2px; }
+#stylus-popup #popup-options > #help { order: 3; }
+#stylus-popup #popup-options > #options-btn { order: 4; }
+#stylus-popup #popup-options > #help,
+#stylus-popup #popup-options > #options-btn,
+#stylus-popup #popup-options #popup-manage-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--md-text-2);
+}
+#stylus-popup #popup-options .i-manage, #stylus-popup #popup-options .i-info, #stylus-popup #popup-options .i-config { font-size: 22px; color: var(--md-text-2); }
+#stylus-popup #popup-options > a:active, #stylus-popup #popup-options #popup-manage-button:active { background: var(--md-press); }
+#stylus-popup #popup-options > .split-btn:has(#popup-manage-button) > a.dropdown {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 22px;
+  height: 44px;
+  margin-left: -8px;
+  padding: 0;
+  border-radius: 0 22px 22px 0;
+}
+#stylus-popup #popup-options a.dropdown i { font-size: 18px; color: var(--md-outline); }
+
+/* find row */
+html body#stylus-popup #popup-options > .split-btn:has(#find-styles-btn) {
+  order: 10;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  flex: 0 0 calc(100% + 24px);
+  box-sizing: border-box;
+  margin: 4px -8px 0 -16px;
+  border-top: 1px solid var(--md-outline-v);
+}
+#stylus-popup #find-styles-btn {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  box-sizing: border-box;
+  min-width: 0;
+  height: 54px;
+  padding: 0 16px;
+  border-radius: 0;
+  color: var(--md-text);
+  font: 500 15px/1.2 var(--family);
+  text-decoration: none;
+}
+#stylus-popup #find-styles-btn::after { content: attr(data-label); }
+#stylus-popup #find-styles-btn i { flex: 0 0 auto; font-size: 22px; color: var(--md-primary); }
+#stylus-popup #find-styles-btn:active, #stylus-popup #popup-options a.dropdown:active { background: var(--md-press); }
+#stylus-popup #popup-options > .split-btn:has(#find-styles-btn) > a.dropdown {
+  display: inline-flex;
+  flex: 0 0 56px;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   height: auto;
   margin: 0;
   padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-left: 1px solid var(--md-outline-v);
-  border-radius: 0 16px 16px 0;
+  border-radius: 0;
 }
-#stylus-popup #popup-options a:not(.split-btn-menu > *):active { background: var(--md-press); }
-#stylus-popup #popup-options a[data-label]::after { content: attr(data-label); }
-#stylus-popup #popup-options a:not(.split-btn-menu > *) i { flex: 0 0 auto; min-width: 24px; text-align: center; color: var(--md-primary); font-size: 22px; }
-#stylus-popup #popup-options a.dropdown i { font-size: 20px; color: var(--md-text-2); }
 
-/* ----- popup: dropdown menus (vertical sheet) ----- */
+/* dropdown menus: open downwards, as a sheet */
 html body#stylus-popup #popup-options .split-btn-menu {
   position: absolute;
-  top: auto;
-  bottom: calc(100% + 8px);
-  left: 0;
-  right: auto;
+  top: calc(100% + 4px);
+  bottom: auto;
+  left: auto;
+  right: 8px;
+  z-index: 1000;
   width: max-content;
-  min-width: 100%;
-  max-width: calc(100vw - 32px);
+  min-width: 200px;
+  max-width: calc(100vw - 16px);
   padding: 6px;
   border: 0;
-  border-radius: 20px;
+  border-radius: 16px;
   background: var(--md-surface);
   box-shadow: var(--md-elev2);
   transform: none;
-  z-index: 1000;
 }
-html.styles-last body#stylus-popup #popup-options .split-btn-menu { top: calc(100% + 8px); bottom: auto; }
-html body#stylus-popup #popup-options .split-btn:nth-child(2) .split-btn-menu { left: auto; right: 0; }
+html body#stylus-popup #popup-options > .split-btn:has(#find-styles-btn) .split-btn-menu { right: 8px; }
 #stylus-popup #popup-options .split-btn-menu::before {
   display: block;
-  padding: 8px 14px 6px;
+  padding: 10px 14px 6px;
   color: var(--md-primary);
-  font: 600 11px/1 var(--family);
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  font: 500 12px/1 var(--family);
+  letter-spacing: .04em;
 }
 #stylus-popup #popup-options #popup-manage-button ~ .split-btn-menu::before { content: "Manage"; }
 #stylus-popup #popup-options #find-styles-btn ~ .split-btn-menu::before { content: "Search styles on"; }
@@ -1070,11 +1333,11 @@ html body#stylus-popup #popup-options .split-btn:nth-child(2) .split-btn-menu { 
   min-width: 0;
   height: 48px;
   padding: 0 14px !important;
-  border-radius: 12px;
+  border-radius: 10px;
   background: none;
   box-shadow: none;
   color: var(--md-text);
-  font: 500 14px/1 var(--family);
+  font: 400 15px/1 var(--family);
   text-decoration: none;
   white-space: nowrap;
 }
@@ -1083,13 +1346,139 @@ html body#stylus-popup #popup-options .split-btn:nth-child(2) .split-btn-menu { 
   color: var(--md-on-primary-c);
 }
 
+/* notices */
+#stylus-popup #unstylable,
+#stylus-popup #no-styles {
+  order: 1;
+  margin: 12px 12px 0;
+  padding: 16px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev1);
+  color: var(--md-text-2);
+  line-height: 1.4;
+}
+#stylus-popup #no-styles { padding: 22px 20px; text-align: center; cursor: pointer; }
+#stylus-popup #no-styles:hover { color: var(--md-text-2); }
+#stylus-popup #no-styles b { display: block; margin-top: 6px; color: var(--md-primary); font-weight: 500; }
+#stylus-popup #unstylable a { color: var(--md-text-2); }
+
+/* style list: "Styles for this site" */
+html body#stylus-popup #installed {
+  order: 2;
+  flex: 0 0 auto;
+  margin: 32px 12px 0;
+  overflow: visible;
+  border: 0 !important;
+  border-radius: 16px;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev1);
+  position: relative;
+}
+#stylus-popup #installed:empty { display: none; }
+#stylus-popup #installed::before {
+  content: "Styles for this site";
+  position: absolute;
+  left: 4px;
+  bottom: 100%;
+  padding-bottom: 6px;
+  color: var(--md-primary);
+  font: 500 13px/1 var(--family);
+  letter-spacing: .02em;
+}
+html.blocked #stylus-popup #installed::before { display: none; }
+#stylus-popup #installed .entry { border-radius: 0; background: none; border: 0; }
+#stylus-popup #installed .entry:first-child { border-radius: 16px 16px 0 0; }
+#stylus-popup #installed .entry:last-child { border-radius: 0 0 16px 16px; }
+#stylus-popup #installed .entry:only-child { border-radius: 16px; }
+#stylus-popup #installed .entry + .entry { border-top: 1px solid var(--md-outline-v); }
+#stylus-popup .entry-content { height: var(--entry-h); padding: 0 6px 0 14px; align-items: center; }
+#stylus-popup .entry .main-controls { overflow: hidden; }
+#stylus-popup .style-name {
+  display: block;
+  padding: 0;
+  color: var(--md-text);
+  font: 500 15px/var(--entry-h) var(--family);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#stylus-popup .entry .style-name > input { margin: 0 14px 0 0 !important; }
+#stylus-popup .entry.enabled .style-name { font-weight: 500; }
+#stylus-popup .entry.disabled .style-name, #stylus-popup .entry.disabled .actions i { color: var(--md-text-2); }
+#stylus-popup .entry.disabled .style-name { font-weight: 400; }
+#stylus-popup .entry:hover :not(i), #stylus-popup .entry.disabled:hover *:not(i) { color: inherit; }
+#stylus-popup .entry .actions { flex: 0 0 auto; }
+#stylus-popup .entry .actions > :not([hidden]) {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: var(--md-text-2);
+}
+#stylus-popup .entry .actions > :hover { background: none; }
+#stylus-popup .entry .actions > :active { background: var(--md-press); }
+#stylus-popup .entry .actions i { font-size: 21px; color: var(--md-text-2); }
+#stylus-popup .entry .actions .i-edit { color: var(--md-primary); }
+
+/* toggle-all, write style */
+html body#stylus-popup #toggler {
+  order: 4;
+  flex: 0 0 auto;
+  margin: 12px 12px 0;
+  border: 0;
+  border-radius: 16px;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev1);
+}
+#stylus-popup #toggler summary { padding: 0 16px; min-height: 52px; display: flex; align-items: center; color: var(--md-text); font-weight: 500; }
+#stylus-popup #toggler details[open] { padding: 8px 8px 12px; }
+#stylus-popup #toggler details[open] summary { padding-left: 8px; }
+html body#stylus-popup #main-actions {
+  order: 5;
+  flex: 0 0 auto;
+  margin: 12px 12px calc(16px + env(safe-area-inset-bottom, 0px));
+  border: 0 !important;
+  border-radius: 16px;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev1);
+  align-items: center;
+}
+#stylus-popup #write-wrapper { padding: 12px 16px; align-items: flex-start; gap: 12px; }
+#stylus-popup #write-wrapper::after { display: none; }
+#stylus-popup #write-wrapper > .icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  border-radius: 50%;
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+}
+#stylus-popup #write-wrapper > .icon i { font-size: 22px; color: var(--md-on-primary); }
+#stylus-popup #write-style { align-self: center; font-size: 14px; min-width: 0; }
+#stylus-popup #write-style::before {
+  content: "Write new style for";
+  display: block;
+  margin-bottom: 2px;
+  color: var(--md-text-2);
+  font: 400 12px/1.3 var(--family);
+}
+#stylus-popup #write-style .breadcrumbs { gap: 0; }
+#stylus-popup .write-style-link { color: var(--md-primary); line-height: 1.7; }
+#stylus-popup .write-style-link:last-child { color: var(--md-text-2); }
+#stylus-popup .breadcrumbs:hover a { color: var(--md-primary); }
+#stylus-popup #write-for-frames { color: var(--md-text-2); }
 
 /* ----- popup: per-style menu (3 dots) ----- */
 #stylus-popup #menu {
   box-sizing: border-box;
   padding-left: 16px;
   padding-right: 16px;
-  background: rgba(40, 10, 70, .45);
+  background: rgba(0, 0, 0, .45);
 }
 #stylus-popup #menu > div {
   width: 100%;
@@ -1104,20 +1493,20 @@ html body#stylus-popup #popup-options .split-btn:nth-child(2) .split-btn-menu { 
 #stylus-popup #menu > div > * { padding: 12px 20px; }
 #stylus-popup #menu header {
   gap: 12px;
-  padding: 14px 20px !important;
+  padding: 16px 20px !important;
   border-bottom: 0;
-  background: var(--md-surface-v);
+  background: var(--md-surface);
   color: var(--md-text);
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
 }
-#stylus-popup #menu.enabled header { background: var(--md-primary-c); color: var(--md-on-primary-c); }
+#stylus-popup #menu.enabled header { background: var(--md-surface); color: var(--md-text); }
 #stylus-popup #menu.delete header { background: var(--md-danger); color: #fff; }
 #stylus-popup #menu.delete header i { color: #fff; }
-#stylus-popup #menu header label { display: flex; align-items: center; flex: 1 1 auto; min-width: 0; }
+#stylus-popup #menu header label { display: flex; align-items: center; gap: 14px; flex: 1 1 auto; min-width: 0; }
 #stylus-popup #menu header a { margin-left: 0; }
-#stylus-popup #menu header i { color: var(--md-primary); font-size: 22px; }
-#stylus-popup #menu [data-ovr]:not([hidden]) { min-height: 52px; font-size: 14px; }
+#stylus-popup #menu header i { color: var(--md-text-2); font-size: 22px; }
+#stylus-popup #menu [data-ovr]:not([hidden]) { min-height: 52px; font-size: 15px; }
 #stylus-popup #menu [data-ovr] label {
   position: relative;
   display: flex;
@@ -1148,7 +1537,7 @@ html #stylus-popup #menu [data-ovr] label input:checked {
 #stylus-popup #menu main > p:not(#matchedOvr) {
   margin: 4px -20px;
   padding: 10px 20px;
-  background: var(--md-surface-v);
+  background: var(--md-bg);
   color: var(--md-text-2);
   font-size: 13px;
   line-height: 1.4;
@@ -1170,113 +1559,22 @@ html #stylus-popup #menu [data-ovr] label input:checked {
   background: transparent;
 }
 html #stylus-popup #menu footer button { margin: 0; flex: 0 0 auto; padding: 0 18px !important; }
-html #stylus-popup #menu footer [data-cmd=cancel] { order: 1; background: var(--md-surface-v) !important; color: var(--md-text) !important; }
-html #stylus-popup #menu footer [data-cmd=edit] { order: 2; background: var(--md-cta) !important; color: var(--md-on-cta) !important; }
+html #stylus-popup #menu footer [data-cmd=cancel] { order: 1; background: transparent !important; color: var(--md-primary) !important; }
+html #stylus-popup #menu footer [data-cmd=edit] { order: 2; background: var(--md-primary) !important; color: var(--md-on-primary) !important; }
 html #stylus-popup #menu footer [data-cmd=delete] {
   order: 0;
   margin-right: auto;
   background: transparent !important;
   color: var(--md-danger) !important;
-  box-shadow: inset 0 0 0 1px var(--md-outline-v);
 }
-html #stylus-popup #menu.delete footer [data-cmd=delete] { background: var(--md-danger) !important; color: #fff !important; box-shadow: none; }
+html #stylus-popup #menu.delete footer [data-cmd=delete] { background: var(--md-danger) !important; color: #fff !important; }
 
-/* ----- manage: header, empty state, links ----- */
-#stylus-manage #header {
-  border: 0 !important;
-  border-radius: 0 0 24px 24px;
-  background: var(--md-surface) !important;
-}
-.compact-layout #stylus-manage #header { border-bottom: 0 !important; }
-.compact-layout #stylus-manage #header h1 {
-  display: flex;
-  visibility: visible;
-  align-items: center;
-  gap: 12px;
-  margin: -12px -16px 4px;
-  padding: 14px 16px;
-  background: var(--md-grad);
-  color: var(--md-on-cta);
-  font: 500 20px/1.2 var(--family);
-}
-.compact-layout #stylus-manage #header h1::before {
-  content: "S";
-  display: grid;
-  place-items: center;
-  flex: 0 0 32px;
-  height: 32px;
-  box-sizing: border-box;
-  border: 2px solid #000;
-  border-radius: 9px;
-  background: #35f0d8;
-  color: #000;
-  font: 800 18px/1 var(--family);
-}
-.compact-layout #stylus-manage #header .filter-selection,
-.compact-layout #stylus-manage #header label { background: none; }
-.compact-layout.empty #stylus-manage #links { padding: 20px 16px 28px; font-size: 14px; line-height: 1.3; }
-.compact-layout.empty #stylus-manage #links::before {
-  content: "Get styles";
-  display: block;
-  margin: 0 4px 12px;
-  color: var(--md-primary);
-  font: 600 12px/1 var(--family);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-.compact-layout #stylus-manage #links main { display: flex; flex-flow: column; gap: 8px; }
-.compact-layout #stylus-manage #links main a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-sizing: border-box;
-  width: 100%;
-  min-height: 52px;
-  padding: 8px 8px 8px 8px;
-  border-radius: 16px;
-  background: var(--md-surface);
-  box-shadow: var(--md-elev1);
-  color: var(--md-text);
-  font-weight: 500;
-  text-decoration: none;
-}
-.compact-layout #stylus-manage #links main a:active { background: var(--md-primary-c); }
-.compact-layout #stylus-manage #links main a::before {
-  content: "";
-  flex: 0 0 36px;
-  height: 36px;
-  border-radius: 12px;
-  background: url("@@EXT_P@@") center / 20px no-repeat, var(--md-primary-c);
-}
-.compact-layout #stylus-manage #links main a::after {
-  content: "";
-  flex: 0 0 24px;
-  height: 24px;
-  margin-left: auto;
-  background: url("@@CHEV@@") center / 24px no-repeat;
-}
-.compact-layout #stylus-manage #links main a:has(> img)::before { display: none; }
-.compact-layout #stylus-manage #links main a.target { padding: 8px; line-height: 1.3; overflow: visible; }
-.compact-layout #stylus-manage #links main a.target > img {
-  position: static;
-  flex: 0 0 20px;
-  width: 20px;
-  height: 20px;
-  margin: 0;
-  padding: 8px;
-  border-radius: 12px;
-  background: var(--md-primary-c);
-}
-[data-ui-theme="dark"].compact-layout #stylus-manage #links main a::before {
-  background: url("@@EXT_D@@") center / 20px no-repeat, var(--md-primary-c);
-}
-.compact-layout #stylus-manage #backup-hint main {
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: var(--md-surface-v);
-  color: var(--md-text-2);
-  font-size: 13px;
-}
+/* ===== install-usercss ===== */
+#stylus-install-usercss { background: var(--md-bg); }
+#stylus-install-usercss #header { background: var(--md-surface) !important; box-shadow: var(--md-elev1); }
+
+/* ===== embedded dialogs / config ===== */
+.config-dialog #message-box-contents { padding-top: 4px; }
 
 /* ----- editor: toolbar fills the row, header accent ----- */
 #stylus-edit #header {
@@ -1329,62 +1627,6 @@ html:not([data-ui-theme="dark"]) .cm-s-default .CodeMirror-cursor { border-left-
 .usercss .applies-to .remove-applies-to:active { background: var(--md-press); }
 .usercss .applies-to li .add-applies-to:first-child { margin-left: 0; }
 
-/* ----- options: full screen on phones, tidy time row ----- */
-html.mobile:has(> body#stylus-options) { padding: 0 !important; }
-html.mobile #stylus-options {
-  width: 100% !important;
-  max-width: none;
-  height: var(--100dvh, 100dvh);
-  max-height: var(--100dvh, 100dvh);
-  margin: 0 !important;
-  border: 0 !important;
-  border-radius: 0;
-  box-shadow: none !important;
-}
-html.mobile #stylus-options main { flex: 1 1 auto; min-height: 0; }
-#stylus-options label:has(> #manage\.newUI) { display: none; }
-#stylus-options main { padding: 14px 14px 24px; }
-#stylus-options .block {
-  margin: 0 0 14px;
-  padding: 0 16px 8px;
-  overflow: hidden;
-  border: 1px solid var(--md-outline-v) !important;
-  box-shadow: var(--md-elev1);
-}
-#stylus-options .block > h2 {
-  position: relative;
-  margin: 0 -16px 6px;
-  padding: 14px 16px 12px 30px;
-  border-bottom: 1px solid var(--md-outline-v);
-  background: var(--md-surface-v);
-  color: var(--md-text);
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-#stylus-options .block > h2::before {
-  content: "";
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  width: 4px;
-  height: 16px;
-  margin-top: -8px;
-  border-radius: 2px;
-  background: var(--md-grad);
-}
-#stylus-options label.radio-wrapper:has(.md-time-range) { flex-wrap: wrap; }
-#stylus-options .md-time-range {
-  display: flex;
-  flex: 1 0 100%;
-  align-items: center;
-  gap: 10px;
-  box-sizing: border-box;
-  margin: 2px 0 10px 30px;
-}
-#stylus-options .md-time-range input[type=time] { flex: 1 1 0; width: auto; min-width: 0; margin: 0; }
-#stylus-options .md-time-range .md-to { flex: 0 0 auto; color: var(--md-text-2); font-size: 13px; }
 '''
 
 CLIPBOARD_JS = r'''import editor from './editor';
@@ -1670,9 +1912,13 @@ def material_css(P):
     uri = 'data:image/svg+xml,' + urllib.parse.quote(svg, safe="/:=,;()' ")
     css = MATERIAL_CSS.replace('@@USERCSS_ICON@@', uri.replace('"', '%22'))
     return (css
-            .replace('@@EXT_P@@', svg_uri(ICONS['external'], '#8400ff'))
-            .replace('@@EXT_D@@', svg_uri(ICONS['external'], '#d0b3ff'))
-            .replace('@@CHEV@@', svg_uri(EXTRA_PATHS['chev'], '#85798f')))
+            .replace('@@EXT_P@@', svg_uri(ICONS['external'], '#0b57d0'))
+            .replace('@@EXT_D@@', svg_uri(ICONS['external'], '#a8c7fa'))
+            .replace('@@CHEV@@', svg_uri(EXTRA_PATHS['chev'], '#747780'))
+            .replace('@@CHECK_L@@', svg_uri(ICONS['check1'], '#0b57d0'))
+            .replace('@@CHECK_D@@', svg_uri(ICONS['check1'], '#a8c7fa'))
+            .replace('@@SEARCH@@', svg_uri(ICONS['search'], '#4a4e59'))
+            .replace('@@SEARCH_D@@', svg_uri(ICONS['search'], '#c4c6d0')))
 
 
 def bump_minor(ver):
@@ -1734,12 +1980,13 @@ def apply(root, args):
            '<div class="md-break md-break-1"></div><div class="md-break md-break-2"></div>\n'
            '      <div id="details-wrapper">', marker='md-break-1')
     for old, new in [
-        ('<a id="popup-manage-button" ', '<a id="popup-manage-button" data-label="Manage" '),
-        ('<a id="find-styles-btn" ', '<a id="find-styles-btn" data-label="Find styles" '),
-        ('<a id="help" ', '<a id="help" data-label="Help" '),
-        ('<a id="options-btn" ', '<a id="options-btn" data-label="Options" '),
+        ('<a id="find-styles-btn" ', '<a id="find-styles-btn" data-label="Find styles for this site" '),
     ]:
         P.edit('src/popup.html', old, new, marker=re.search(r'data-label="[^"]+"', new).group(0))
+    P.edit('src/popup.html', '<div id="popup-options">\n',
+           '<div id="popup-options">\n'
+           '    <div class="md-brand"><img srcset="icon/32.png, icon/48.png 2x" width="30" height="30" alt="">'
+           '<span>Stylus</span></div>\n', marker='class="md-brand"')
     P.edit('src/options.html',
            r'(<input type="time" required id="schemeSwitcher\.nightStart">)\s*~\s*'
            r'(<input type="time" required id="schemeSwitcher\.nightEnd">)',
@@ -1766,6 +2013,10 @@ def apply(root, args):
     P.edit('src/js/dom-init.js', "prefs.subscribe('compactWidth', (k, val) => {\n",
            "prefs.subscribe('compactWidth', (k, val) => {\n    if (MOBILE) val = 99999; // mobile fork: always compact\n",
            marker='val = 99999')
+    P.edit('src/popup/render.js',
+           "    initNoStyles?.();\n    $('#main-actions').append(disabler);\n  } else {\n    $('#toggler').append(disabler);\n  }\n",
+           "    initNoStyles?.();\n  }\n  $('#popup-options .md-brand').after(disabler); // mobile fork: master switch in the top bar\n",
+           marker=".md-brand').after(disabler)")
     P.edit('src/edit/moz-section-widget.js',
            "        const value = cm.display.barWidth + 'px';\n"
            "        if (widget[KEY] !== value) {\n"
