@@ -1169,6 +1169,164 @@ html #stylus-manage #header .filter-selection select {
 .compact-layout #stylus-manage .entry .updater-icons .update-note { display: none; }
 .compact-layout #stylus-manage .updater-icons > :not(.check-update)::after { max-width: 60vw; }
 
+/* ===== manage v2: icon toolbar, one search row, filter popover ===== */
+.compact-layout #stylus-manage #header h1 {
+  grid-column: 1 / -1;
+  justify-content: center;
+  text-transform: capitalize;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 6px;
+}
+.compact-layout #stylus-manage #manage-settings {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 14px;
+}
+.compact-layout #stylus-manage #wide-inputs,
+.compact-layout #stylus-manage #filters { display: contents; }
+.compact-layout #stylus-manage #actions { order: 1; flex: 1 0 100%; display: block; }
+.compact-layout #stylus-manage #actions main { justify-content: space-between; gap: 0; }
+
+/* toolbar: [+] update history order sync import export options */
+#stylus-manage #backup { display: contents; }
+html #stylus-manage #actions main button.icon,
+html #stylus-manage #actions details + main button.icon {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 34px;
+  max-width: 46px;
+  height: 44px;
+  border-radius: 22px !important;
+}
+html #stylus-manage #actions a#add-style > button.icon,
+html #stylus-manage #actions details + main a#add-style > button.icon {
+  flex: 0 0 44px;
+  width: 44px !important;
+  min-width: 44px;
+  max-width: 44px;
+  padding: 0 !important;
+  border-radius: 50% !important;
+}
+html #stylus-manage #actions a#add-style > button.icon::before { content: none; }
+#stylus-manage #actions a#add-style { order: 0; flex: 0 0 auto; margin: 0; }
+#stylus-manage #check-all-updates { order: 1; }
+#stylus-manage #update-history-button { order: 2; }
+#stylus-manage #injection-order-button { order: 3; }
+#stylus-manage #backup > #sync-styles { order: 4; }
+#stylus-manage #backup > #import { order: 5; }
+#stylus-manage #backup > .split-btn { order: 6; display: flex; flex: 1 1 0; min-width: 0; max-width: 62px; }
+#stylus-manage #backup > .split-btn > button:first-child { flex: 1 1 0; max-width: none; }
+#stylus-manage #backup > .split-btn > .split-btn-pedal {
+  flex: 0 0 16px;
+  width: 16px;
+  min-width: 0;
+  height: 44px;
+  margin: 0 0 0 -8px;
+  padding: 0 !important;
+  border-radius: 0 22px 22px 0 !important;
+  background: none !important;
+  color: var(--md-outline) !important;
+}
+#stylus-manage #manage-options-button { order: 7; }
+#stylus-manage #update-all { order: 8; flex: 1 0 100%; }
+#stylus-manage #backup > p { order: 9; flex: 1 0 100%; margin: 0; }
+#stylus-manage #backup > p:empty { display: none; }
+
+/* search pill with the mode picker inside */
+#stylus-manage #search-wrapper {
+  order: 2;
+  flex: 1 1 170px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 46px;
+  padding: 0 4px 0 0;
+  border-radius: 23px;
+  background: var(--md-surface-v);
+}
+#stylus-manage #search-wrapper:focus-within { box-shadow: 0 0 0 2px var(--md-primary); }
+html #stylus-manage #search-wrapper #search {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 46px;
+  padding: 0 4px 0 46px !important;
+  border-radius: 23px 0 0 23px !important;
+  background: transparent url("@@SEARCH@@") no-repeat 15px center / 22px !important;
+  box-shadow: none !important;
+}
+:root[data-ui-theme="dark"] #stylus-manage #search-wrapper #search { background-image: url("@@SEARCH_D@@") !important; }
+#stylus-manage #search-wrapper .select-wrapper { flex: 0 0 auto; }
+html #stylus-manage #search-wrapper select {
+  height: 36px;
+  padding: 0 20px 0 6px !important;
+  background: transparent !important;
+  color: var(--md-primary);
+  font: 500 13px/1 var(--family);
+}
+#stylus-manage #search-wrapper .select-wrapper::after { color: var(--md-primary); right: 2px; }
+#stylus-manage #search-wrapper > a.icon { display: none; }
+
+/* filter + sort as round icon buttons */
+#stylus-manage #md-filter-btn,
+#stylus-manage #sort-wrapper {
+  flex: 0 0 46px;
+  position: relative;
+  box-sizing: border-box;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--md-surface-v);
+}
+#stylus-manage #md-filter-btn { order: 3; display: grid; place-items: center; cursor: pointer; }
+#stylus-manage #md-filter-btn i { font-size: 24px; color: var(--md-text-2); }
+#stylus-manage #md-filter-btn:has(input:checked) { background: var(--md-primary-c); }
+#stylus-manage #md-filter-btn:has(input:checked) i { color: var(--md-on-primary-c); }
+#stylus-manage #header:has(#filters input:checked) #md-filter-btn::after {
+  content: "";
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--md-primary);
+  box-shadow: 0 0 0 2px var(--md-surface-v);
+}
+#stylus-manage #sort-wrapper { order: 4; display: block; }
+#stylus-manage #sort-wrapper .select-wrapper { position: absolute; inset: 0; margin: 0; }
+#stylus-manage #sort-wrapper .select-wrapper::after,
+#stylus-manage #sort-wrapper > a.icon { display: none; }
+html #stylus-manage #header #sort-wrapper select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent url("@@SORT@@") no-repeat center / 24px !important;
+  color: transparent !important;
+}
+:root[data-ui-theme="dark"] #stylus-manage #header #sort-wrapper select { background-image: url("@@SORT_D@@") !important; }
+#stylus-manage #sort-wrapper select option { background: var(--md-surface); color: var(--md-text); }
+
+/* filter chips live in a panel that opens from the filter button */
+#stylus-manage #stats { order: 5; flex: 0 0 auto; }
+.compact-layout #stylus-manage #filters .filter-selection { order: 6; flex: 1 1 100%; }
+.compact-layout #stylus-manage #header:not(:has(#md-filter-toggle:checked)) #filters .filter-selection { display: none; }
+
+/* links + backup reminder share one row */
+.compact-layout #stylus-manage #links { order: 8; flex: 0 0 auto; }
+.compact-layout #stylus-manage #backup-hint { order: 9; flex: 0 0 auto; }
+.compact-layout #stylus-manage :is(#links, #backup-hint):has(details[open]) { flex: 1 0 100%; }
+.compact-layout.empty #stylus-manage #links { flex: 1 0 100%; }
+
+#stylus-manage .entry .actions .delete:hover i { color: var(--md-danger); }
+
 /* ===== popup: top bar, find row, list (Violentmonkey layout) ===== */
 html.mobile:not(.sidebar) { width: 100% !important; }
 html.mobile #stylus-popup { min-width: 100% !important; max-width: none !important; width: 100%; }
@@ -1569,6 +1727,218 @@ html #stylus-popup #menu footer [data-cmd=delete] {
 }
 html #stylus-popup #menu.delete footer [data-cmd=delete] { background: var(--md-danger) !important; color: #fff !important; }
 
+/* ===== popup v2: manage pill, toggle-all card, search progress + results ===== */
+#stylus-popup #popup-options > .split-btn:has(#popup-manage-button) > a.dropdown { display: none; }
+html body#stylus-popup #popup-options #popup-manage-button {
+  width: auto;
+  height: 40px;
+  padding: 0 16px 0 12px;
+  gap: 8px;
+  border-radius: 20px;
+  background: var(--md-primary-c);
+  color: var(--md-on-primary-c);
+  font: 500 14px/1 var(--family);
+}
+#stylus-popup #popup-manage-button::after { content: attr(data-label); }
+#stylus-popup #popup-options #popup-manage-button i { font-size: 20px; color: var(--md-on-primary-c); }
+#stylus-popup #popup-options .i-m-cog { font-size: 22px; color: var(--md-text-2); }
+#stylus-popup .entry .actions .i-m-tune { font-size: 21px; }
+#stylus-popup .entry .actions .i-m-edit { font-size: 21px; color: var(--md-primary); }
+#stylus-popup .entry.disabled .actions .i-m-edit { color: var(--md-text-2); }
+@media (max-width: 399px) { #stylus-popup #popup-options .md-brand span { display: none; } }
+
+/* toggle-all card (upstream turns the open summary into an invisible overlay; keep it as the first row) */
+html body#stylus-popup #toggler details[open] > summary {
+  position: static;
+  width: auto;
+  height: auto;
+  color: var(--md-text);
+  cursor: pointer;
+}
+html body#stylus-popup #toggler details[open] { padding: 0; position: static; }
+html body#stylus-popup #toggler { padding: 0 !important; }
+html body#stylus-popup #toggler details > div { display: flex; margin: 0; position: relative; }
+html body#stylus-popup #toggler { display: block; position: relative; padding: 0; overflow: hidden; }
+#stylus-popup #toggler details { padding: 0; }
+#stylus-popup #toggler summary {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 52px;
+  padding: 0 52px 0 16px;
+  list-style: none;
+  color: var(--md-text);
+  font-weight: 500;
+  cursor: pointer;
+}
+#stylus-popup #toggler summary::-webkit-details-marker { display: none; }
+#stylus-popup #toggler summary::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 0;
+  height: 0;
+  margin: 0 12px 0 2px;
+  border: solid transparent;
+  border-width: 5px 0 5px 7px;
+  border-left-color: var(--md-text-2);
+  transition: transform .15s;
+}
+#stylus-popup #toggler details[open] > summary::before { transform: rotate(90deg); }
+#stylus-popup #toggler details > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: 54px;
+  padding: 6px 16px;
+  border-top: 1px solid var(--md-outline-v);
+}
+#stylus-popup #toggler details > div > label {
+  order: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  color: var(--md-text);
+  font-size: 14px;
+  text-transform: capitalize;
+}
+#stylus-popup #toggler details > .icon {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  bottom: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  border-radius: 50%;
+}
+#stylus-popup #toggler details > .icon i { font-size: 20px; color: var(--md-outline); }
+#stylus-popup #toggler details > .icon:has(input:checked) i { color: var(--md-primary); }
+/* enable / disable become labelled chips */
+html #stylus-popup #toggler input[data-toggle^="+"],
+html #stylus-popup #toggler input[data-toggle^="-"] {
+  -moz-appearance: none;
+  appearance: none;
+  order: 2;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: auto !important;
+  min-width: 78px;
+  height: 36px !important;
+  margin: 0 !important;
+  padding: 0 14px;
+  border: 1px solid var(--md-outline) !important;
+  border-radius: 18px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+html #stylus-popup #toggler input[data-toggle^="+"] { order: 1; }
+html #stylus-popup #toggler input[data-toggle^="+"]::before,
+html #stylus-popup #toggler input[data-toggle^="-"]::before { display: none !important; }
+html #stylus-popup #toggler input[data-toggle^="+"]::after,
+html #stylus-popup #toggler input[data-toggle^="-"]::after {
+  content: attr(title) !important;
+  position: static;
+  width: auto !important;
+  height: auto !important;
+  margin: 0;
+  border: 0;
+  background: none !important;
+  box-shadow: none;
+  transform: none;
+  color: var(--md-text);
+  font: 500 13px/1 var(--family);
+  -webkit-mask: none;
+  mask: none;
+  opacity: 1;
+}
+html #stylus-popup #toggler input[data-toggle^="+"]:checked,
+html #stylus-popup #toggler input[data-toggle^="-"]:checked {
+  border-color: transparent !important;
+  background: var(--md-primary-c) !important;
+}
+html #stylus-popup #toggler input[data-toggle^="+"]:checked::after,
+html #stylus-popup #toggler input[data-toggle^="-"]:checked::after { color: var(--md-on-primary-c); }
+
+/* find: progress strip right under the bar, results next */
+html body#stylus-popup #pct {
+  order: -9;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2px 14px;
+  box-sizing: border-box;
+  margin: 0 !important;
+  padding: 0 16px;
+  overflow: hidden;
+  background: var(--md-surface);
+  border-bottom: 1px solid var(--md-outline-v);
+  color: var(--md-primary);
+  font: 500 13px/1 var(--family);
+}
+#stylus-popup #pct > * { padding: 14px 0 12px; }
+#stylus-popup #pct::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 35%;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--md-primary);
+  animation: md-indet 1.2s ease-in-out infinite;
+}
+#stylus-popup #pct:not(:has(> :not([style*="opacity: 0"]))) { display: none; }
+html.search-results-shown #stylus-popup #pct { display: none; }
+@keyframes md-indet { 0% { left: -35%; } 100% { left: 100%; } }
+html body#stylus-popup #search-results-error {
+  order: -8;
+  margin: 12px 12px 0;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: var(--md-danger);
+  color: #fff;
+}
+html body#stylus-popup #search-results {
+  order: -8;
+  margin: 12px 12px 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+#stylus-popup #search-params { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 4px 0 12px; }
+#stylus-popup #search-params #search-query { flex: 1 1 140px; min-width: 0; border-radius: 20px; }
+#stylus-popup .search-results-nav { margin: 0 0 8px; background: none; border: 0 !important; }
+#stylus-popup #search-results-list { min-height: 0; }
+#stylus-popup .search-result {
+  border: 0;
+  border-radius: 16px;
+  background: var(--md-surface);
+  box-shadow: var(--md-elev1);
+  overflow: hidden;
+}
+#stylus-popup .search-result:hover { background: var(--md-surface); }
+#stylus-popup .search-result[data-installed] { box-shadow: 0 0 0 2px var(--md-primary); }
+#stylus-popup .search-result-title { color: var(--md-text); }
+#stylus-popup .search-result-screenshot { border-radius: 10px; }
+#stylus-popup .search-result-status { background-color: color-mix(in srgb, var(--md-primary) 82%, transparent); color: var(--md-on-primary); border-radius: 10px 10px 0 0; }
+#stylus-popup .search-result-actions button { box-shadow: var(--md-elev2); }
+#stylus-popup .search-result-meta::before { background: var(--md-surface); }
+#stylus-popup .search-result:hover .search-result-meta::before { background: var(--md-surface); }
+#stylus-popup .not-matching-explainer { border: 0; border-radius: 10px; background: var(--md-primary-c); color: var(--md-on-primary-c); }
+
 /* ===== install-usercss ===== */
 #stylus-install-usercss { background: var(--md-bg); }
 #stylus-install-usercss #header { background: var(--md-surface) !important; box-shadow: var(--md-elev1); }
@@ -1626,6 +1996,30 @@ html:not([data-ui-theme="dark"]) .cm-s-default .CodeMirror-cursor { border-left-
 .usercss .applies-to .add-applies-to:active,
 .usercss .applies-to .remove-applies-to:active { background: var(--md-press); }
 .usercss .applies-to li .add-applies-to:first-child { margin-left: 0; }
+
+/* ===== dialogs: title never clipped, injection order in the same palette ===== */
+html #message-box-title:not(:empty) {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 60px;
+  line-height: 1.25;
+}
+#message-box:not(.injection-order) #message-box-contents { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+#message-box-buttons { flex: 0 0 auto; }
+.injection-order > div { max-width: 92vw; }
+.injection-order header { background: none; color: var(--md-text-2); font-size: 14px; line-height: 1.45; }
+.injection-order [data-prio] header { background-color: var(--md-primary-c) !important; color: var(--md-on-primary-c); }
+.injection-order .draggable-list-target { background: var(--md-primary-c); }
+.injection-order-entry { color: var(--md-text); }
+.injection-order-entry a, .injection-order-entry a[href] { color: inherit; }
+.injection-order-entry.enabled a[href] { font-weight: 500; }
+.injection-order-toggle::after { color: var(--md-outline); }
+[data-prio] .injection-order-toggle::after, .injection-order-toggle:hover::after { color: var(--md-primary); }
+.injection-order [data-prio] header,
+.injection-order :is(ol, #message-box-buttons),
+.injection-order-entry:nth-child(n + 2) { border-top-color: var(--md-outline-v); }
 
 '''
 
@@ -1790,6 +2184,21 @@ ICONS = {
     # new icons (id char, path)
     'paste': ('\u2397', 'M19 2h-4.18C14.4.84 13.3 0 12 0c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z'),
     'select-all': ('\u26f6', 'M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2zM7 17h10V7H7v10zm2-8h6v6H9V9z'),
+    'm-dashboard': ('\u2460', 'M19,5V7H15V5H19M9,5V11H5V5H9M19,13V19H15V13H19M9,17V19H5V17H9M21,3H13V9H21V3M11,3H3V13H11V3M21,11H13V21H21V11M11,15H3V21H11V15Z'),
+    'm-update': ('\u2461', 'M13,18H11V10L7.5,13.5L6.08,12.08L12,6.16L17.92,12.08L16.5,13.5L13,10V18M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z'),
+    'm-install': ('\u2462', 'M8 17V15H16V17H8M16 10L12 14L8 10H10.5V6H13.5V10H16M12 2C17.5 2 22 6.5 22 12C22 17.5 17.5 22 12 22C6.5 22 2 17.5 2 12C2 6.5 6.5 2 12 2M12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4Z'),
+    'm-order': ('\u2463', 'M7,13V11H21V13H7M7,19V17H21V19H7M7,7V5H21V7H7M3,8V5H2V4H4V8H3M2,17V16H5V20H2V19H4V18.5H3V17.5H4V17H2M4.25,10A0.75,0.75 0 0,1 5,10.75C5,10.95 4.92,11.14 4.79,11.27L3.12,13H5V14H2V13.08L4,11H2V10H4.25Z'),
+    'm-sync': ('\u2464', 'M13.03 18C13.08 18.7 13.24 19.38 13.5 20H6.5C5 20 3.69 19.5 2.61 18.43C1.54 17.38 1 16.09 1 14.58C1 13.28 1.39 12.12 2.17 11.1S4 9.43 5.25 9.15C5.67 7.62 6.5 6.38 7.75 5.43S10.42 4 12 4C13.95 4 15.6 4.68 16.96 6.04C18.32 7.4 19 9.05 19 11C19.04 11 19.07 11 19.1 11C18.36 11.07 17.65 11.23 17 11.5V11C17 9.62 16.5 8.44 15.54 7.46C14.56 6.5 13.38 6 12 6S9.44 6.5 8.46 7.46C7.5 8.44 7 9.62 7 11H6.5C5.53 11 4.71 11.34 4.03 12.03C3.34 12.71 3 13.53 3 14.5S3.34 16.29 4.03 17C4.71 17.66 5.53 18 6.5 18H13.03M19 13.5V12L16.75 14.25L19 16.5V15C20.38 15 21.5 16.12 21.5 17.5C21.5 17.9 21.41 18.28 21.24 18.62L22.33 19.71C22.75 19.08 23 18.32 23 17.5C23 15.29 21.21 13.5 19 13.5M19 20C17.62 20 16.5 18.88 16.5 17.5C16.5 17.1 16.59 16.72 16.76 16.38L15.67 15.29C15.25 15.92 15 16.68 15 17.5C15 19.71 16.79 21.5 19 21.5V23L21.25 20.75L19 18.5V20Z'),
+    'm-import': ('\u2465', 'M2 12H4V17H20V12H22V17C22 18.11 21.11 19 20 19H4C2.9 19 2 18.11 2 17V12M12 15L17.55 9.54L16.13 8.13L13 11.25V2H11V11.25L7.88 8.13L6.46 9.55L12 15Z'),
+    'm-export': ('\u2466', 'M2 12H4V17H20V12H22V17C22 18.11 21.11 19 20 19H4C2.9 19 2 18.11 2 17V12M12 2L6.46 7.46L7.88 8.88L11 5.75V15H13V5.75L16.13 8.88L17.55 7.45L12 2Z'),
+    'm-sort': ('\u2467', 'M3,13H15V11H3M3,6V8H21V6M3,18H9V16H3V18Z'),
+    'm-filter': ('\u2468', 'M6,13H18V11H6M3,6V8H21V6M10,18H14V16H10V18Z'),
+    'm-trash': ('\u2469', 'M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z'),
+    'm-home': ('\u246a', 'M12 5.69L17 10.19V18H15V12H9V18H7V10.19L12 5.69M12 3L2 12H5V20H11V14H13V20H19V12H22'),
+    'm-tune': ('\u246b', 'M8 13C6.14 13 4.59 14.28 4.14 16H2V18H4.14C4.59 19.72 6.14 21 8 21S11.41 19.72 11.86 18H22V16H11.86C11.41 14.28 9.86 13 8 13M8 19C6.9 19 6 18.1 6 17C6 15.9 6.9 15 8 15S10 15.9 10 17C10 18.1 9.1 19 8 19M19.86 6C19.41 4.28 17.86 3 16 3S12.59 4.28 12.14 6H2V8H12.14C12.59 9.72 14.14 11 16 11S19.41 9.72 19.86 8H22V6H19.86M16 9C14.9 9 14 8.1 14 7C14 5.9 14.9 5 16 5S18 5.9 18 7C18 8.1 17.1 9 16 9Z'),
+    'm-cog': ('\u246c', 'M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11L19.5,12L19.43,13L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10M11.25,4L10.88,6.61C9.68,6.86 8.62,7.5 7.85,8.39L5.44,7.35L4.69,8.65L6.8,10.2C6.4,11.37 6.4,12.64 6.8,13.8L4.68,15.36L5.43,16.66L7.86,15.62C8.63,16.5 9.68,17.14 10.87,17.38L11.24,20H12.76L13.13,17.39C14.32,17.14 15.37,16.5 16.14,15.62L18.57,16.66L19.32,15.36L17.2,13.81C17.6,12.64 17.6,11.37 17.2,10.2L19.31,8.65L18.56,7.35L16.15,8.39C15.38,7.5 14.32,6.86 13.12,6.62L12.75,4H11.25Z'),
+    'm-history': ('\u246d', 'M13.5,8H12V13L16.28,15.54L17,14.33L13.5,12.25V8M13,3A9,9 0 0,0 4,12H1L4.96,16.03L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3'),
+    'm-edit': ('\u246e', 'M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z'),
 }
 
 SVG_TPL = ('<svg id="{id}" version="1.1" xmlns="http://www.w3.org/2000/svg" '
@@ -1918,7 +2327,9 @@ def material_css(P):
             .replace('@@CHECK_L@@', svg_uri(ICONS['check1'], '#0b57d0'))
             .replace('@@CHECK_D@@', svg_uri(ICONS['check1'], '#a8c7fa'))
             .replace('@@SEARCH@@', svg_uri(ICONS['search'], '#4a4e59'))
-            .replace('@@SEARCH_D@@', svg_uri(ICONS['search'], '#c4c6d0')))
+            .replace('@@SEARCH_D@@', svg_uri(ICONS['search'], '#c4c6d0'))
+            .replace('@@SORT@@', svg_uri(ICONS['m-sort'][1], '#4a4e59'))
+            .replace('@@SORT_D@@', svg_uri(ICONS['m-sort'][1], '#c4c6d0')))
 
 
 def bump_minor(ver):
@@ -1996,139 +2407,25 @@ def apply(root, args):
         P.edit(rel, r'<svg class="hollow-gear"[^>]*>\s*<text[^>]*>\u2699</text>\s*</svg>',
                '<i class="i-config"></i>', regex=True, count=0, optional=True)
 
-    print('== js entry points')
-    for page in PAGES:
-        P.add_import(f'src/{page}/index.js', f"import '@/material/{page}.css';\n", f'@/material/{page}.css')
-    P.add_import('src/edit/index.js', "import ClipboardBar from './clipboard-bar';\n",
-                 'ClipboardBar from', after="import EditorHeader from './editor-header';\n")
-    P.edit('src/edit/index.js', '  EditorHeader();\n', '  EditorHeader();\n  ClipboardBar();\n',
-           marker='ClipboardBar();')
-
-    print('== mobile behavior (card list always, compact layout always, editor gutter)')
-    # backups can import prefs (manage.newUI=false, compactWidth) that break the card layout
-    P.edit('src/manage/ui.js', 'const tableView_ = __values[pManageNewUi];',
-           'const tableView_ = true; // mobile fork: card list only', marker='const tableView_ = true')
-    P.edit('src/background/index.js', "if (MOBILE) prefs.set('manage.newUI', false);",
-           "if (MOBILE) prefs.set('manage.newUI', true);", marker="prefs.set('manage.newUI', true)")
-    P.edit('src/js/dom-init.js', "prefs.subscribe('compactWidth', (k, val) => {\n",
-           "prefs.subscribe('compactWidth', (k, val) => {\n    if (MOBILE) val = 99999; // mobile fork: always compact\n",
-           marker='val = 99999')
-    P.edit('src/popup/render.js',
-           "    initNoStyles?.();\n    $('#main-actions').append(disabler);\n  } else {\n    $('#toggler').append(disabler);\n  }\n",
-           "    initNoStyles?.();\n  }\n  $('#popup-options .md-brand').after(disabler); // mobile fork: master switch in the top bar\n",
-           marker=".md-brand').after(disabler)")
-    P.edit('src/edit/moz-section-widget.js',
-           "        const value = cm.display.barWidth + 'px';\n"
-           "        if (widget[KEY] !== value) {\n"
-           "          widget[KEY] = value;\n"
-           "          node.style.setProperty('--cm-bar-width', value);\n"
-           "        }",
-           "        const value = cm.display.barWidth + 'px';\n"
-           "        const gutterW = cm.display.gutters.offsetWidth + 'px';\n"
-           "        if (widget[KEY] !== value + gutterW) {\n"
-           "          widget[KEY] = value + gutterW;\n"
-           "          node.style.setProperty('--cm-bar-width', value);\n"
-           "          node.style.setProperty('--cm-gutter-w', gutterW);\n"
-           "        }",
-           marker='--cm-gutter-w')
-
-    print('== manifest / version')
-    P.edit('src/manifest.json', '"alarms",\n', '"alarms",\n    "clipboardRead",\n    "clipboardWrite",\n',
-           marker='"clipboardRead"')
-    pj = P.path('package.json')
-    m = re.search(r'"version":\s*"([^"]+)"', read(pj))
-    if m and (not args.no_bump or args.build_number is not None):
-        old = m.group(1)
-        new = old if args.no_bump else bump_minor(old)
-        if args.build_number is not None:
-            core = re.match(r'^\d+\.\d+\.\d+', new)
-            new = f'{core.group(0) if core else new}.{args.build_number}'
-        if new != old:
-            P.edit('package.json', f'"version": "{old}"', f'"version": "{new}"')
-        mj = P.path('src/manifest.json')
-        mm = re.search(r'"version":\s*"([^"]+)"', read(mj))
-        if mm and mm.group(1) != new:
-            P.edit('src/manifest.json', f'"version": "{mm.group(1)}"', f'"version": "{new}"')
-        log('ver', f'{old} -> {new}')
-    if args.name:
-        P.edit('src/manifest.json', r'^(\{\s*"name":\s*)"[^"]*"', rf'\1"{args.name}"', regex=True)
-    if args.id:
-        P.edit('src/manifest-mv2-firefox.json', r'("id":\s*)"[^"]*"', rf'\1"{args.id}"', regex=True)
-    if args.update_url:
-        mf = 'src/manifest-mv2-firefox.json'
-        if '"update_url"' in read(P.path(mf)):
-            P.edit(mf, r'("update_url":\s*)"[^"]*"', rf'\1"{args.update_url}"', regex=True)
-        else:
-            P.edit(mf, r'("gecko":\s*\{)', rf'\1\n      "update_url": "{args.update_url}",', regex=True)
-
-
-def run(cmd, cwd, **kw):
-    print('  $', ' '.join(cmd))
-    return subprocess.run(cmd, cwd=cwd, check=True, shell=(os.name == 'nt'), **kw)
-
-
-def build_icons(root):
-    print('== icon font')
-    if not (root / 'node_modules' / 'svg2ttf').exists():
-        warn('node_modules missing: run `pnpm install` then `pnpm build-icons` '
-             '(regenerates src/css/icons.woff2 + glyph list in global.css)')
-        return
-    run(['node', 'tools/build-icons.mjs'], root)
-
-
-def build(root):
-    print('== build (firefox mv2)')
-    run(['node', 'tools/build.js', 'build', 'firefox'], root)
-    dist = root / ('dist' if os.environ.get('GITHUB_ACTIONS') else 'dist-firefox-mv2')
-    if not dist.is_dir():
-        warn(f'build output not found: {dist}')
-        return
-    import json
-    ver = json.loads(read(dist / 'manifest.json')).get('version', 'x')
-    xpi = root / f'stylus-material-{ver}.xpi'
-    with zipfile.ZipFile(xpi, 'w', zipfile.ZIP_DEFLATED) as z:
-        for f in sorted(dist.rglob('*')):
-            if f.is_file():
-                z.write(f, f.relative_to(dist).as_posix())
-    log('xpi', str(xpi))
-
-
-def main():
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
-    ap.add_argument('repo', nargs='?', default=None, help='Stylus checkout (default: cwd, else script dir)')
-    ap.add_argument('--build', action='store_true', help='pnpm install + build firefox mv2 + pack .xpi')
-    ap.add_argument('--no-bump', action='store_true', help='do not bump the minor version')
-    ap.add_argument('--id', help='gecko add-on id for src/manifest-mv2-firefox.json')
-    ap.add_argument('--name', help='extension name for src/manifest.json')
-    ap.add_argument('--update-url', help='gecko update_url (Firefox auto-update manifest)')
-    ap.add_argument('--build-number', type=int, help='append as 4th version part (must grow every release)')
-    ap.add_argument('--strict', action='store_true', help='exit 1 if any anchor was not found')
-    args = ap.parse_args()
-
-    cands = [Path(args.repo)] if args.repo else [Path.cwd(), Path(__file__).resolve().parent]
-    root = next((c for c in cands if (c / 'src' / 'edit.html').exists()), None)
-    if not root:
-        sys.exit('Stylus checkout not found (src/edit.html missing). Pass the repo path.')
-    root = root.resolve()
-    print(f'Stylus repo: {root}')
-
-    if args.build and not (root / 'node_modules' / 'svg2ttf').exists():
-        print('== pnpm install')
-        run(['pnpm', 'install'], root)
-
-    apply(root, args)
-    build_icons(root)
-    if args.build:
-        build(root)
-
-    print(f'\nDone. {len(warnings)} warning(s).')
-    for w in warnings:
-        print('  -', w)
-    if not args.build:
-        print('Next: pnpm build-firefox   (output: dist-firefox-mv2/)')
-    if args.strict and warnings:
-        sys.exit(1)
-
-
-if __name__ == '__main__':
-    main()
+    print('== icons: clearer glyphs for popup + manager')
+    for rel, old, new, mk in [
+        ('src/popup.html', '<a id="popup-manage-button" ', '<a id="popup-manage-button" data-label="Manage" ', 'data-label="Manage"'),
+        ('src/popup.html', '<i class="i-manage"></i>', '<i class="i-m-dashboard"></i>', 'i-m-dashboard'),
+        ('src/popup.html', '<a class="configure" tabindex="0">\n            <i class="i-config"></i>',
+         '<a class="configure" tabindex="0">\n            <i class="i-m-tune"></i>', 'i-m-tune'),
+        ('src/popup.html', '<i class=i-edit></i>', '<i class=i-m-edit></i>', 'i-m-edit'),
+        ('src/popup.html', '<a id="options-btn" i18n="title:openOptions" tabindex="0">\n      <i class="i-config"></i>',
+         '<a id="options-btn" i18n="title:openOptions" tabindex="0">\n      <i class="i-m-cog"></i>', 'i-m-cog'),
+        ('src/manage.html', '<i class=i-update-check></i>', '<i class=i-m-update></i>', 'i-m-update'),
+        ('src/manage.html', '<i class=i-install></i>', '<i class=i-m-install></i>', 'i-m-install'),
+        ('src/manage.html', '<i class=i-log></i>', '<i class=i-m-history></i>', 'i-m-history'),
+        ('src/manage.html', '<i class=i-reorder></i>', '<i class=i-m-order></i>', 'i-m-order'),
+        ('src/manage.html', '<i class=i-cloud></i>', '<i class=i-m-sync></i>', 'i-m-sync'),
+        ('src/manage.html', '<a class="configure-usercss" i18n="title:configureStyle" tabindex="0">\n      <i class=i-config></i>',
+         '<a class="configure-usercss" i18n="title:configureStyle" tabindex="0">\n      <i class=i-m-tune></i>', 'i-m-tune'),
+        ('src/manage.html', '<i class="i-config"></i>', '<i class="i-m-cog"></i>', 'i-m-cog'),
+        ('src/manage.html', '<i class=i-external></i>', '<i class=i-m-home></i>', 'i-m-home'),
+        ('src/manage.html', '<a class="delete" i18n="title:deleteStyleLabel" tabindex="0">\n          <i class=i-close></i>',
+         '<a class="delete" i18n="title:deleteStyleLabel" tabindex="0">\n          <i class=i-m-trash></i>', 'i-m-trash'),
+        ('src/manage.html', '<button id="import" i18n="importLabel"></button>',
+         '<button id="import
