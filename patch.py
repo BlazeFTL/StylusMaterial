@@ -681,6 +681,7 @@ html.mobile #stylus-options main { flex: 1 1 auto; min-height: 0; }
   border-radius: 24px;
   background: var(--md-surface);
 }
+#stylus-options .block > :not(h2) { width: auto; }
 #stylus-options .items { width: auto; padding-top: 4px; padding-bottom: 4px; }
 #stylus-options .items > label,
 #stylus-options .items .radio-wrapper { min-height: 56px; }
@@ -1268,21 +1269,27 @@ html #stylus-manage #search-wrapper select {
 #stylus-manage #search-wrapper .select-wrapper::after { color: var(--md-primary); right: 2px; }
 #stylus-manage #search-wrapper > a.icon { display: none; }
 
-/* filter + sort as round icon buttons */
-#stylus-manage #md-filter-btn,
-#stylus-manage #sort-wrapper {
+/* filter, help and sort are round icon buttons */
+.compact-layout #stylus-manage #header :is(#md-filter-btn, #md-help-btn, #sort-wrapper) {
   flex: 0 0 46px;
   position: relative;
+  display: grid;
+  place-items: center;
   box-sizing: border-box;
   width: 46px;
   height: 46px;
+  margin: 0;
+  padding: 0;
   border-radius: 50%;
   background: var(--md-surface-v);
+  cursor: pointer;
 }
-#stylus-manage #md-filter-btn { order: 3; display: grid; place-items: center; cursor: pointer; }
-#stylus-manage #md-filter-btn i { font-size: 24px; color: var(--md-text-2); }
-#stylus-manage #md-filter-btn:has(input:checked) { background: var(--md-primary-c); }
-#stylus-manage #md-filter-btn:has(input:checked) i { color: var(--md-on-primary-c); }
+.compact-layout #stylus-manage #header #md-filter-btn { order: 3; }
+.compact-layout #stylus-manage #header #sort-wrapper { order: 4; }
+.compact-layout #stylus-manage #header #md-help-btn { order: 5; }
+#stylus-manage #header :is(#md-filter-btn, #md-help-btn, #sort-wrapper) > i { font-size: 24px; color: var(--md-text-2); pointer-events: none; }
+.compact-layout #stylus-manage #header :is(#md-filter-btn, #md-help-btn):has(input:checked) { background: var(--md-primary-c); }
+#stylus-manage #header :is(#md-filter-btn, #md-help-btn):has(input:checked) > i { color: var(--md-on-primary-c); }
 #stylus-manage #header:has(#filters input:checked) #md-filter-btn::after {
   content: "";
   position: absolute;
@@ -1294,7 +1301,7 @@ html #stylus-manage #search-wrapper select {
   background: var(--md-primary);
   box-shadow: 0 0 0 2px var(--md-surface-v);
 }
-#stylus-manage #sort-wrapper { order: 4; display: block; }
+/* the native select sits invisibly on top of the sort icon and keeps its own picker */
 #stylus-manage #sort-wrapper .select-wrapper { position: absolute; inset: 0; margin: 0; }
 #stylus-manage #sort-wrapper .select-wrapper::after,
 #stylus-manage #sort-wrapper > a.icon { display: none; }
@@ -1304,14 +1311,13 @@ html #stylus-manage #header #sort-wrapper select {
   width: 100%;
   min-width: 0;
   height: 100%;
+  margin: 0;
   padding: 0 !important;
+  border: 0 !important;
   border-radius: 50% !important;
-  -moz-appearance: none;
-  appearance: none;
-  background: transparent url("@@SORT@@") no-repeat center / 24px !important;
-  color: transparent !important;
+  opacity: 0;
+  cursor: pointer;
 }
-:root[data-ui-theme="dark"] #stylus-manage #header #sort-wrapper select { background-image: url("@@SORT_D@@") !important; }
 #stylus-manage #sort-wrapper select option { background: var(--md-surface); color: var(--md-text); }
 
 /* filter chips live in a panel that opens from the filter button */
@@ -1319,11 +1325,102 @@ html #stylus-manage #header #sort-wrapper select {
 .compact-layout #stylus-manage #filters .filter-selection { order: 6; flex: 1 1 100%; }
 .compact-layout #stylus-manage #header:not(:has(#md-filter-toggle:checked)) #filters .filter-selection { display: none; }
 
-/* links + backup reminder share one row */
-.compact-layout #stylus-manage #links { order: 8; flex: 0 0 auto; }
-.compact-layout #stylus-manage #backup-hint { order: 9; flex: 0 0 auto; }
-.compact-layout #stylus-manage :is(#links, #backup-hint):has(details[open]) { flex: 1 0 100%; }
-.compact-layout.empty #stylus-manage #links { flex: 1 0 100%; }
+/* links + backup reminder live behind the help button */
+.compact-layout #stylus-manage #header :is(#links, #backup-hint) { display: none; }
+.compact-layout #stylus-manage #header:has(#md-help-toggle:checked) :is(#links, #backup-hint) {
+  display: block;
+  flex: 1 1 100%;
+  box-sizing: border-box;
+  border-radius: 18px;
+  background: var(--md-bg);
+  overflow: hidden;
+}
+.compact-layout #stylus-manage #links { order: 8; }
+.compact-layout #stylus-manage #backup-hint { order: 9; }
+.compact-layout #stylus-manage #header :is(#links, #backup-hint) details { gap: 0; }
+.compact-layout #stylus-manage #header :is(#links, #backup-hint) summary {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 50px;
+  padding: 0 16px;
+  list-style: none;
+  cursor: pointer;
+}
+.compact-layout #stylus-manage #header :is(#links, #backup-hint) summary::-webkit-details-marker { display: none; }
+.compact-layout #stylus-manage #header :is(#links, #backup-hint) summary::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 0;
+  height: 0;
+  margin-right: 14px;
+  border: solid transparent;
+  border-width: 5px 0 5px 7px;
+  border-left-color: var(--md-text-2);
+  transition: transform .15s;
+}
+.compact-layout #stylus-manage #header :is(#links, #backup-hint) details[open] > summary::before { transform: rotate(90deg); }
+.compact-layout:not(.empty) #stylus-manage #header #links summary::after,
+.compact-layout #stylus-manage #header #backup-hint summary::after {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--md-text);
+  font: 500 15px/1 var(--family);
+}
+.compact-layout #stylus-manage #header :is(#links, #backup-hint) details[open] > main { padding: 0 16px 14px; }
+.compact-layout #stylus-manage #header #links main { display: flex; flex-flow: row wrap; gap: 8px; }
+.compact-layout #stylus-manage #header #links main a {
+  width: auto;
+  min-height: 0;
+  padding: 8px 14px;
+  border-radius: 16px;
+  background: var(--md-surface);
+  box-shadow: none;
+  font-size: 14px;
+}
+.compact-layout #stylus-manage #header #links main a::before,
+.compact-layout #stylus-manage #header #links main a::after,
+.compact-layout #stylus-manage #header #links main a > img { display: none; }
+.compact-layout #stylus-manage #header #backup-hint main { padding: 0 16px 14px; background: none; border-radius: 0; }
+
+/* no styles yet: a centred "Get styles" board instead of a long list */
+.compact-layout.empty #stylus-manage #installed { padding: 0; min-height: 0; }
+.compact-layout.empty #stylus-manage #links {
+  flex: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 26px 16px 32px;
+  line-height: 1.25;
+}
+.compact-layout.empty #stylus-manage #links::before {
+  content: "Get styles";
+  display: block;
+  margin: 0 0 16px;
+  color: var(--md-text);
+  font: 500 20px/1.2 var(--family);
+  text-align: center;
+  letter-spacing: 0;
+}
+.compact-layout.empty #stylus-manage #links main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.compact-layout.empty #stylus-manage #links main a {
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  min-height: 108px;
+  padding: 16px 10px 14px;
+  border-radius: 22px;
+  text-align: center;
+  font-size: 14px;
+}
+.compact-layout.empty #stylus-manage #links main a::before { flex: 0 0 48px; width: 48px; height: 48px; border-radius: 16px; }
+.compact-layout.empty #stylus-manage #links main a::after { display: none; }
+.compact-layout.empty #stylus-manage #links main a:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.compact-layout.empty #stylus-manage #links main a.target > img { flex: 0 0 20px; margin: 0; padding: 14px; border-radius: 16px; }
 
 #stylus-manage .entry .actions .delete:hover i { color: var(--md-danger); }
 
@@ -1728,7 +1825,28 @@ html #stylus-popup #menu footer [data-cmd=delete] {
 html #stylus-popup #menu.delete footer [data-cmd=delete] { background: var(--md-danger) !important; color: #fff !important; }
 
 /* ===== popup v2: manage pill, toggle-all card, search progress + results ===== */
-#stylus-popup #popup-options > .split-btn:has(#popup-manage-button) > a.dropdown { display: none; }
+/* manage keeps its caret as the second half of the pill */
+html body#stylus-popup #popup-options > .split-btn:has(#popup-manage-button) { margin-right: 2px; }
+html body#stylus-popup #popup-options > .split-btn:has(#popup-manage-button) > #popup-manage-button { border-radius: 20px 0 0 20px; padding-right: 12px; }
+html body#stylus-popup #popup-options > .split-btn:has(#popup-manage-button) > a.dropdown {
+  width: 30px;
+  height: 40px;
+  margin: 0 0 0 2px;
+  border-radius: 0 20px 20px 0;
+  background: var(--md-primary-c);
+}
+#stylus-popup #popup-options > .split-btn:has(#popup-manage-button) > a.dropdown i { color: var(--md-on-primary-c); }
+/* both dropdowns open as a sheet aligned to the screen margins, right under the bar */
+html body#stylus-popup #popup-options > .split-btn { position: static; }
+html body#stylus-popup #popup-options .split-btn-menu,
+html body#stylus-popup #popup-options > .split-btn:has(#find-styles-btn) .split-btn-menu {
+  top: calc(100% + 6px);
+  left: 12px;
+  right: 12px;
+  width: auto;
+  min-width: 0;
+  max-width: none;
+}
 html body#stylus-popup #popup-options #popup-manage-button {
   width: auto;
   height: 40px;
@@ -1939,6 +2057,13 @@ html body#stylus-popup #search-results {
 #stylus-popup .search-result:hover .search-result-meta::before { background: var(--md-surface); }
 #stylus-popup .not-matching-explainer { border: 0; border-radius: 10px; background: var(--md-primary-c); color: var(--md-on-primary-c); }
 
+
+/* top bar: brand yields first so the caret + icons never wrap */
+html body#stylus-popup #popup-options .md-brand { flex: 1 1 0; gap: 10px; font-size: 18px; overflow: hidden; }
+html body#stylus-popup #popup-options .md-brand span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html body#stylus-popup #popup-options > #help,
+html body#stylus-popup #popup-options > #options-btn { width: 40px; height: 40px; }
+html body#stylus-popup #disableAll-label { margin: 0 4px 0 6px; }
 /* ===== install-usercss ===== */
 #stylus-install-usercss { background: var(--md-bg); }
 #stylus-install-usercss #header { background: var(--md-surface) !important; box-shadow: var(--md-elev1); }
@@ -2185,20 +2310,21 @@ ICONS = {
     'paste': ('\u2397', 'M19 2h-4.18C14.4.84 13.3 0 12 0c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z'),
     'select-all': ('\u26f6', 'M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2zM7 17h10V7H7v10zm2-8h6v6H9V9z'),
     'm-dashboard': ('\u2460', 'M19,5V7H15V5H19M9,5V11H5V5H9M19,13V19H15V13H19M9,17V19H5V17H9M21,3H13V9H21V3M11,3H3V13H11V3M21,11H13V21H21V11M11,15H3V21H11V15Z'),
-    'm-update': ('\u2461', 'M13,18H11V10L7.5,13.5L6.08,12.08L12,6.16L17.92,12.08L16.5,13.5L13,10V18M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z'),
+    'm-update': ('\u2461', 'M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z'),
     'm-install': ('\u2462', 'M8 17V15H16V17H8M16 10L12 14L8 10H10.5V6H13.5V10H16M12 2C17.5 2 22 6.5 22 12C22 17.5 17.5 22 12 22C6.5 22 2 17.5 2 12C2 6.5 6.5 2 12 2M12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4Z'),
     'm-order': ('\u2463', 'M7,13V11H21V13H7M7,19V17H21V19H7M7,7V5H21V7H7M3,8V5H2V4H4V8H3M2,17V16H5V20H2V19H4V18.5H3V17.5H4V17H2M4.25,10A0.75,0.75 0 0,1 5,10.75C5,10.95 4.92,11.14 4.79,11.27L3.12,13H5V14H2V13.08L4,11H2V10H4.25Z'),
     'm-sync': ('\u2464', 'M13.03 18C13.08 18.7 13.24 19.38 13.5 20H6.5C5 20 3.69 19.5 2.61 18.43C1.54 17.38 1 16.09 1 14.58C1 13.28 1.39 12.12 2.17 11.1S4 9.43 5.25 9.15C5.67 7.62 6.5 6.38 7.75 5.43S10.42 4 12 4C13.95 4 15.6 4.68 16.96 6.04C18.32 7.4 19 9.05 19 11C19.04 11 19.07 11 19.1 11C18.36 11.07 17.65 11.23 17 11.5V11C17 9.62 16.5 8.44 15.54 7.46C14.56 6.5 13.38 6 12 6S9.44 6.5 8.46 7.46C7.5 8.44 7 9.62 7 11H6.5C5.53 11 4.71 11.34 4.03 12.03C3.34 12.71 3 13.53 3 14.5S3.34 16.29 4.03 17C4.71 17.66 5.53 18 6.5 18H13.03M19 13.5V12L16.75 14.25L19 16.5V15C20.38 15 21.5 16.12 21.5 17.5C21.5 17.9 21.41 18.28 21.24 18.62L22.33 19.71C22.75 19.08 23 18.32 23 17.5C23 15.29 21.21 13.5 19 13.5M19 20C17.62 20 16.5 18.88 16.5 17.5C16.5 17.1 16.59 16.72 16.76 16.38L15.67 15.29C15.25 15.92 15 16.68 15 17.5C15 19.71 16.79 21.5 19 21.5V23L21.25 20.75L19 18.5V20Z'),
     'm-import': ('\u2465', 'M2 12H4V17H20V12H22V17C22 18.11 21.11 19 20 19H4C2.9 19 2 18.11 2 17V12M12 15L17.55 9.54L16.13 8.13L13 11.25V2H11V11.25L7.88 8.13L6.46 9.55L12 15Z'),
     'm-export': ('\u2466', 'M2 12H4V17H20V12H22V17C22 18.11 21.11 19 20 19H4C2.9 19 2 18.11 2 17V12M12 2L6.46 7.46L7.88 8.88L11 5.75V15H13V5.75L16.13 8.88L17.55 7.45L12 2Z'),
-    'm-sort': ('\u2467', 'M3,13H15V11H3M3,6V8H21V6M3,18H9V16H3V18Z'),
-    'm-filter': ('\u2468', 'M6,13H18V11H6M3,6V8H21V6M10,18H14V16H10V18Z'),
+    'm-sort': ('\u2467', 'M20 17H23L19 21L15 17H18V3H20V17M8 5C4.14 5 1 8.13 1 12C1 15.87 4.13 19 8 19C11.86 19 15 15.87 15 12C15 8.13 11.87 5 8 5M8 7.15C10.67 7.15 12.85 9.32 12.85 12C12.85 14.68 10.68 16.85 8 16.85C5.32 16.85 3.15 14.68 3.15 12C3.15 9.32 5.32 7.15 8 7.15M7 9V12.69L10.19 14.53L10.94 13.23L8.5 11.82V9'),
+    'm-filter': ('\u2468', 'M15,19.88C15.04,20.18 14.94,20.5 14.71,20.71C14.32,21.1 13.69,21.1 13.3,20.71L9.29,16.7C9.06,16.47 8.96,16.16 9,15.87V10.75L4.21,4.62C3.87,4.19 3.95,3.56 4.38,3.22C4.57,3.08 4.78,3 5,3V3H19V3C19.22,3 19.43,3.08 19.62,3.22C20.05,3.56 20.13,4.19 19.79,4.62L15,10.75V19.88M7.04,5L11,10.06V15.58L13,17.58V10.05L16.96,5H7.04Z'),
     'm-trash': ('\u2469', 'M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z'),
     'm-home': ('\u246a', 'M12 5.69L17 10.19V18H15V12H9V18H7V10.19L12 5.69M12 3L2 12H5V20H11V14H13V20H19V12H22'),
     'm-tune': ('\u246b', 'M8 13C6.14 13 4.59 14.28 4.14 16H2V18H4.14C4.59 19.72 6.14 21 8 21S11.41 19.72 11.86 18H22V16H11.86C11.41 14.28 9.86 13 8 13M8 19C6.9 19 6 18.1 6 17C6 15.9 6.9 15 8 15S10 15.9 10 17C10 18.1 9.1 19 8 19M19.86 6C19.41 4.28 17.86 3 16 3S12.59 4.28 12.14 6H2V8H12.14C12.59 9.72 14.14 11 16 11S19.41 9.72 19.86 8H22V6H19.86M16 9C14.9 9 14 8.1 14 7C14 5.9 14.9 5 16 5S18 5.9 18 7C18 8.1 17.1 9 16 9Z'),
     'm-cog': ('\u246c', 'M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.44,17.94L4.95,18.95C4.73,19.03 4.46,18.95 4.34,18.73L2.34,15.27C2.21,15.05 2.27,14.78 2.46,14.63L4.57,12.97L4.5,12L4.57,11L2.46,9.37C2.27,9.22 2.21,8.95 2.34,8.73L4.34,5.27C4.46,5.05 4.73,4.96 4.95,5.05L7.44,6.05C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.56,6.05L19.05,5.05C19.27,4.96 19.54,5.05 19.66,5.27L21.66,8.73C21.79,8.95 21.73,9.22 21.54,9.37L19.43,11L19.5,12L19.43,13L21.54,14.63C21.73,14.78 21.79,15.05 21.66,15.27L19.66,18.73C19.54,18.95 19.27,19.04 19.05,18.95L16.56,17.95C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10M11.25,4L10.88,6.61C9.68,6.86 8.62,7.5 7.85,8.39L5.44,7.35L4.69,8.65L6.8,10.2C6.4,11.37 6.4,12.64 6.8,13.8L4.68,15.36L5.43,16.66L7.86,15.62C8.63,16.5 9.68,17.14 10.87,17.38L11.24,20H12.76L13.13,17.39C14.32,17.14 15.37,16.5 16.14,15.62L18.57,16.66L19.32,15.36L17.2,13.81C17.6,12.64 17.6,11.37 17.2,10.2L19.31,8.65L18.56,7.35L16.15,8.39C15.38,7.5 14.32,6.86 13.12,6.62L12.75,4H11.25Z'),
     'm-history': ('\u246d', 'M13.5,8H12V13L16.28,15.54L17,14.33L13.5,12.25V8M13,3A9,9 0 0,0 4,12H1L4.96,16.03L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3'),
     'm-edit': ('\u246e', 'M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z'),
+    'm-help': ('\u246f', 'M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z'),
 }
 
 SVG_TPL = ('<svg id="{id}" version="1.1" xmlns="http://www.w3.org/2000/svg" '
@@ -2433,7 +2559,11 @@ def apply(root, args):
          '<button id="export" class="icon" i18n="title:exportLabel"><i class=i-m-export></i></button', 'i-m-export'),
         ('src/manage.html', '      <div id="sort-wrapper">',
          '      <label id="md-filter-btn" title="Filters"><input type="checkbox" id="md-filter-toggle" hidden>'
-         '<i class=i-m-filter></i></label>\n\n      <div id="sort-wrapper">', 'md-filter-toggle'),
+         '<i class=i-m-filter></i></label>\n\n'
+         '      <label id="md-help-btn" title="Links and backup"><input type="checkbox" id="md-help-toggle" hidden>'
+         '<i class=i-m-help></i></label>\n\n      <div id="sort-wrapper">', 'md-filter-toggle'),
+        ('src/manage.html', '<div id="sort-wrapper">\n        <div class="select-wrapper" i18n="title:sortLabel">',
+         '<div id="sort-wrapper">\n        <i class=i-m-sort></i>\n        <div class="select-wrapper" i18n="title:sortLabel">', 'i-m-sort'),
     ]:
         P.edit(rel, old, new, marker=mk, count=0 if mk in ('i-m-update', 'i-m-home') else 1)
 
