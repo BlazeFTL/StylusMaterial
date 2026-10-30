@@ -2428,4 +2428,148 @@ def apply(root, args):
         ('src/manage.html', '<a class="delete" i18n="title:deleteStyleLabel" tabindex="0">\n          <i class=i-close></i>',
          '<a class="delete" i18n="title:deleteStyleLabel" tabindex="0">\n          <i class=i-m-trash></i>', 'i-m-trash'),
         ('src/manage.html', '<button id="import" i18n="importLabel"></button>',
-         '<button id="import
+         '<button id="import" class="icon" i18n="title:importLabel"><i class=i-m-import></i></button>', 'i-m-import'),
+        ('src/manage.html', '<button id="export" i18n="exportLabel"></button',
+         '<button id="export" class="icon" i18n="title:exportLabel"><i class=i-m-export></i></button', 'i-m-export'),
+        ('src/manage.html', '      <div id="sort-wrapper">',
+         '      <label id="md-filter-btn" title="Filters"><input type="checkbox" id="md-filter-toggle" hidden>'
+         '<i class=i-m-filter></i></label>\n\n      <div id="sort-wrapper">', 'md-filter-toggle'),
+    ]:
+        P.edit(rel, old, new, marker=mk, count=0 if mk in ('i-m-update', 'i-m-home') else 1)
+
+    print('== js entry points')
+    for page in PAGES:
+        P.add_import(f'src/{page}/index.js', f"import '@/material/{page}.css';\n", f'@/material/{page}.css')
+    P.add_import('src/edit/index.js', "import ClipboardBar from './clipboard-bar';\n",
+                 'ClipboardBar from', after="import EditorHeader from './editor-header';\n")
+    P.edit('src/edit/index.js', '  EditorHeader();\n', '  EditorHeader();\n  ClipboardBar();\n',
+           marker='ClipboardBar();')
+
+    print('== mobile behavior (card list always, compact layout always, editor gutter)')
+    # backups can import prefs (manage.newUI=false, compactWidth) that break the card layout
+    P.edit('src/manage/ui.js', 'const tableView_ = __values[pManageNewUi];',
+           'const tableView_ = true; // mobile fork: card list only', marker='const tableView_ = true')
+    P.edit('src/background/index.js', "if (MOBILE) prefs.set('manage.newUI', false);",
+           "if (MOBILE) prefs.set('manage.newUI', true);", marker="prefs.set('manage.newUI', true)")
+    P.edit('src/js/dom-init.js', "prefs.subscribe('compactWidth', (k, val) => {\n",
+           "prefs.subscribe('compactWidth', (k, val) => {\n    if (MOBILE) val = 99999; // mobile fork: always compact\n",
+           marker='val = 99999')
+    P.edit('src/popup/render.js',
+           "    initNoStyles?.();\n    $('#main-actions').append(disabler);\n  } else {\n    $('#toggler').append(disabler);\n  }\n",
+           "    initNoStyles?.();\n  }\n  $('#popup-options .md-brand').after(disabler); // mobile fork: master switch in the top bar\n",
+           marker=".md-brand').after(disabler)")
+    P.edit('src/edit/moz-section-widget.js',
+           "        const value = cm.display.barWidth + 'px';\n"
+           "        if (widget[KEY] !== value) {\n"
+           "          widget[KEY] = value;\n"
+           "          node.style.setProperty('--cm-bar-width', value);\n"
+           "        }",
+           "        const value = cm.display.barWidth + 'px';\n"
+           "        const gutterW = cm.display.gutters.offsetWidth + 'px';\n"
+           "        if (widget[KEY] !== value + gutterW) {\n"
+           "          widget[KEY] = value + gutterW;\n"
+           "          node.style.setProperty('--cm-bar-width', value);\n"
+           "          node.style.setProperty('--cm-gutter-w', gutterW);\n"
+           "        }",
+           marker='--cm-gutter-w')
+
+    print('== manifest / version')
+    P.edit('src/manifest.json', '"alarms",\n', '"alarms",\n    "clipboardRead",\n    "clipboardWrite",\n',
+           marker='"clipboardRead"')
+    pj = P.path('package.json')
+    m = re.search(r'"version":\s*"([^"]+)"', read(pj))
+    if m and (not args.no_bump or args.build_number is not None):
+        old = m.group(1)
+        new = old if args.no_bump else bump_minor(old)
+        if args.build_number is not None:
+            core = re.match(r'^\d+\.\d+\.\d+', new)
+            new = f'{core.group(0) if core else new}.{args.build_number}'
+        if new != old:
+            P.edit('package.json', f'"version": "{old}"', f'"version": "{new}"')
+        mj = P.path('src/manifest.json')
+        mm = re.search(r'"version":\s*"([^"]+)"', read(mj))
+        if mm and mm.group(1) != new:
+            P.edit('src/manifest.json', f'"version": "{mm.group(1)}"', f'"version": "{new}"')
+        log('ver', f'{old} -> {new}')
+    if args.name:
+        P.edit('src/manifest.json', r'^(\{\s*"name":\s*)"[^"]*"', rf'\1"{args.name}"', regex=True)
+    if args.id:
+        P.edit('src/manifest-mv2-firefox.json', r'("id":\s*)"[^"]*"', rf'\1"{args.id}"', regex=True)
+    if args.update_url:
+        mf = 'src/manifest-mv2-firefox.json'
+        if '"update_url"' in read(P.path(mf)):
+            P.edit(mf, r'("update_url":\s*)"[^"]*"', rf'\1"{args.update_url}"', regex=True)
+        else:
+            P.edit(mf, r'("gecko":\s*\{)', rf'\1\n      "update_url": "{args.update_url}",', regex=True)
+
+
+def run(cmd, cwd, **kw):
+    print('  $', ' '.join(cmd))
+    return subprocess.run(cmd, cwd=cwd, check=True, shell=(os.name == 'nt'), **kw)
+
+
+def build_icons(root):
+    print('== icon font')
+    if not (root / 'node_modules' / 'svg2ttf').exists():
+        warn('node_modules missing: run `pnpm install` then `pnpm build-icons` '
+             '(regenerates src/css/icons.woff2 + glyph list in global.css)')
+        return
+    run(['node', 'tools/build-icons.mjs'], root)
+
+
+def build(root):
+    print('== build (firefox mv2)')
+    run(['node', 'tools/build.js', 'build', 'firefox'], root)
+    dist = root / ('dist' if os.environ.get('GITHUB_ACTIONS') else 'dist-firefox-mv2')
+    if not dist.is_dir():
+        warn(f'build output not found: {dist}')
+        return
+    import json
+    ver = json.loads(read(dist / 'manifest.json')).get('version', 'x')
+    xpi = root / f'stylus-material-{ver}.xpi'
+    with zipfile.ZipFile(xpi, 'w', zipfile.ZIP_DEFLATED) as z:
+        for f in sorted(dist.rglob('*')):
+            if f.is_file():
+                z.write(f, f.relative_to(dist).as_posix())
+    log('xpi', str(xpi))
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+    ap.add_argument('repo', nargs='?', default=None, help='Stylus checkout (default: cwd, else script dir)')
+    ap.add_argument('--build', action='store_true', help='pnpm install + build firefox mv2 + pack .xpi')
+    ap.add_argument('--no-bump', action='store_true', help='do not bump the minor version')
+    ap.add_argument('--id', help='gecko add-on id for src/manifest-mv2-firefox.json')
+    ap.add_argument('--name', help='extension name for src/manifest.json')
+    ap.add_argument('--update-url', help='gecko update_url (Firefox auto-update manifest)')
+    ap.add_argument('--build-number', type=int, help='append as 4th version part (must grow every release)')
+    ap.add_argument('--strict', action='store_true', help='exit 1 if any anchor was not found')
+    args = ap.parse_args()
+
+    cands = [Path(args.repo)] if args.repo else [Path.cwd(), Path(__file__).resolve().parent]
+    root = next((c for c in cands if (c / 'src' / 'edit.html').exists()), None)
+    if not root:
+        sys.exit('Stylus checkout not found (src/edit.html missing). Pass the repo path.')
+    root = root.resolve()
+    print(f'Stylus repo: {root}')
+
+    if args.build and not (root / 'node_modules' / 'svg2ttf').exists():
+        print('== pnpm install')
+        run(['pnpm', 'install'], root)
+
+    apply(root, args)
+    build_icons(root)
+    if args.build:
+        build(root)
+
+    print(f'\nDone. {len(warnings)} warning(s).')
+    for w in warnings:
+        print('  -', w)
+    if not args.build:
+        print('Next: pnpm build-firefox   (output: dist-firefox-mv2/)')
+    if args.strict and warnings:
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
