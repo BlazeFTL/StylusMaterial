@@ -2146,6 +2146,50 @@ html #message-box-title:not(:empty) {
 .injection-order :is(ol, #message-box-buttons),
 .injection-order-entry:nth-child(n + 2) { border-top-color: var(--md-outline-v); }
 
+/* ===== v3 fixes ===== */
+/* manage: help panel. Upstream makes every header <details> a flex row (summary beside content); stack them */
+.compact-layout #stylus-manage #header :is(#links, #backup-hint) details {
+  display: block;
+  gap: 0;
+  margin: 0;
+}
+.compact-layout #stylus-manage #header :is(#links, #backup-hint) summary { margin: 0; }
+.compact-layout #stylus-manage #header :is(#links, #backup-hint) summary::after {
+  white-space: nowrap;
+  hyphens: none;
+  -webkit-hyphens: none;
+}
+.compact-layout #stylus-manage #header #backup-hint main {
+  min-width: 0;
+  max-height: none;
+  overflow: visible;
+  hyphens: manual;
+  -webkit-hyphens: manual;
+  line-height: 1.45;
+}
+/* manage: switch sits a touch lower so it centres on the title text */
+.compact-layout #stylus-manage .entry .style-name > input[type=checkbox] { top: 2px; }
+
+/* popup: the Manage menu opened inside the narrow pill, so it was ~100px wide and its text overflowed */
+html body#stylus-popup #popup-options > .split-btn:has(#popup-manage-button) > .split-btn-menu {
+  left: auto;
+  right: 0;
+  width: max-content;
+  min-width: 232px;
+  max-width: calc(100vw - 24px);
+}
+
+/* editor toolbar: Styles / Homepage / UserCSS glyphs match the other icons; Homepage lines up with the first column */
+.compact-layout #stylus-edit #header #cancel-button::after,
+.compact-layout #stylus-edit #header #url > i { transform: scale(1.18); }
+.compact-layout #stylus-edit #header #usercss-docs::before { mask-size: 84%; -webkit-mask-size: 84%; }
+.compact-layout #stylus-edit #header #url {
+  flex: 0 0 56px;
+  width: 56px;
+  max-width: 56px;
+  margin: 0;
+}
+
 '''
 
 CLIPBOARD_JS = r'''import editor from './editor';
