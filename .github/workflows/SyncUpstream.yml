@@ -1,0 +1,81 @@
+name: sync-upstream
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+    inputs:
+      build:
+        description: Run BuildFork after syncing, even without new upstream commits
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+env:
+  UPSTREAM: https://github.com/openstyles/stylus.git
+  KEEP: README.md
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Merge upstream
+        id: sync
+        run: |
+          set -eu
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          branch=$(git ls-remote --symref "$UPSTREAM" HEAD | awk '/^ref:/ {sub("refs/heads/", "", $2); print $2}')
+          git remote add upstream "$UPSTREAM"
+          git fetch --no-tags upstream "$branch"
+          up=$(git rev-parse --short FETCH_HEAD)
+          ahead=$(git rev-list --count HEAD..FETCH_HEAD)
+          echo "upstream $branch @ $up, $ahead new commit(s)"
+
+          merged=false
+          if [ "$ahead" -gt 0 ]; then
+            git merge --no-commit --no-ff FETCH_HEAD || true
+            if [ ! -f .git/MERGE_HEAD ]; then
+              echo "::error::Merge did not start"
+              exit 1
+            fi
+
+            # GITHUB_TOKEN cannot push workflow-file changes: keep this fork's workflows as they are
+            git checkout HEAD -- .github/workflows
+            git diff --cached --name-only --diff-filter=A -- .github/workflows | xargs -r git rm -qf --
+            for f in $KEEP; do
+              git checkout HEAD -- "$f"
+            done
+
+            left=$(git diff --name-only --diff-filter=U)
+            if [ -n "$left" ]; then
+              git merge --abort || true
+              echo "::error::Unresolved merge conflicts, sync the fork manually: $left"
+              exit 1
+            fi
+
+            git commit -m "Merge upstream ${branch} @ ${up}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+            merged=true
+          fi
+
+          echo "merged=$merged" >> "$GITHUB_OUTPUT"
+          echo "up=$up" >> "$GITHUB_OUTPUT"
+
+      - name: Trigger build
+        if: steps.sync.outputs.merged == 'true' || (github.event_name == 'workflow_dispatch' && inputs.build)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run BuildFork.yml --ref "$GITHUB_REF_NAME"
