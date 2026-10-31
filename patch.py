@@ -2146,48 +2146,73 @@ html #message-box-title:not(:empty) {
 .injection-order :is(ol, #message-box-buttons),
 .injection-order-entry:nth-child(n + 2) { border-top-color: var(--md-outline-v); }
 
-/* ===== v3 fixes ===== */
-/* manage: help panel. Upstream makes every header <details> a flex row (summary beside content); stack them */
-.compact-layout #stylus-manage #header :is(#links, #backup-hint) details {
-  display: block;
+/* ===== v3: options header + rows, delete dialogs ===== */
+:root { --md-on-danger: #fff; }
+:root[data-ui-theme="dark"] { --md-on-danger: #601410; }
+
+/* options: icon left, title centered, close right */
+#stylus-options header {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  align-items: center;
   gap: 0;
-  margin: 0;
+  min-height: 64px;
+  padding: calc(8px + env(safe-area-inset-top, 0px)) 8px 8px 16px;
 }
-.compact-layout #stylus-manage #header :is(#links, #backup-hint) summary { margin: 0; }
-.compact-layout #stylus-manage #header :is(#links, #backup-hint) summary::after {
-  white-space: nowrap;
-  hyphens: none;
-  -webkit-hyphens: none;
-}
-.compact-layout #stylus-manage #header #backup-hint main {
-  min-width: 0;
-  max-height: none;
-  overflow: visible;
-  hyphens: manual;
-  -webkit-hyphens: manual;
-  line-height: 1.45;
-}
-/* manage: switch sits a touch lower so it centres on the title text */
-.compact-layout #stylus-manage .entry .style-name > input[type=checkbox] { top: 2px; }
+#stylus-options header img { justify-self: start; }
+#stylus-options header h1 { margin: 0; text-align: center; font: 400 24px/1.2 var(--family); text-transform: capitalize; }
+#stylus-options header i { justify-self: end; }
 
-/* popup: the Manage menu opened inside the narrow pill, so it was ~100px wide and its text overflowed */
-html body#stylus-popup #popup-options > .split-btn:has(#popup-manage-button) > .split-btn-menu {
-  left: auto;
-  right: 0;
-  width: max-content;
-  min-width: 232px;
-  max-width: calc(100vw - 24px);
+/* options: every row 56px, divider inset the same on all rows */
+#stylus-options .items > label,
+#stylus-options .items > label.radio-wrapper { box-sizing: border-box; min-height: 56px; }
+#stylus-options .items > label.radio-wrapper { gap: 0; cursor: pointer; }
+#stylus-options .items > label + label { border-top: 1px solid var(--md-outline-v); }
+#stylus-options label.radio-wrapper:has(.md-time-range) { align-content: flex-start; row-gap: 0; padding-bottom: 14px; }
+#stylus-options label.radio-wrapper:has(.md-time-range) > span:not(.md-time-range) {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  margin-left: 8px;
 }
+#stylus-options label.radio-wrapper:has(.md-time-range) > input[type=radio] { align-self: center; }
+#stylus-options .md-time-range { margin: 0 0 0 30px; }
+#stylus-options .md-time-range input[type=time] { height: 44px; border-radius: 12px; }
 
-/* editor toolbar: Styles / Homepage / UserCSS glyphs match the other icons; Homepage lines up with the first column */
-.compact-layout #stylus-edit #header #cancel-button::after,
-.compact-layout #stylus-edit #header #url > i { transform: scale(1.18); }
-.compact-layout #stylus-edit #header #usercss-docs::before { mask-size: 84%; -webkit-mask-size: 84%; }
-.compact-layout #stylus-edit #header #url {
-  flex: 0 0 56px;
-  width: 56px;
-  max-width: 56px;
-  margin: 0;
+/* options: toolbar icon rows, preview icons pushed right */
+#stylus-options .items > label:has(> span.radio-wrapper) { justify-content: space-between; gap: 12px; }
+#stylus-options .items > label > span.radio-wrapper { display: flex; align-items: center; flex: 1 1 auto; min-height: 56px; }
+#stylus-options .items > label:has(> span.radio-wrapper) > span:last-child { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+
+/* delete confirm in the popup: same look as message-box dialogs */
+#stylus-popup #menu.delete header {
+  background: var(--md-surface);
+  color: var(--md-danger);
+  padding: 24px 24px 8px !important;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+html #stylus-popup #menu.delete header :is(input, a) { display: none !important; }
+#stylus-popup #menu main.delete {
+  padding: 8px 24px 16px;
+  color: var(--md-text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+#stylus-popup #menu.delete footer { justify-content: flex-start; padding: 8px 16px 16px; gap: 8px; }
+html #stylus-popup #menu.delete footer [data-cmd=edit] { display: none !important; }
+html #stylus-popup #menu.delete footer [data-cmd=delete] {
+  order: 0;
+  margin-right: 0;
+  background: var(--md-danger) !important;
+  color: var(--md-on-danger) !important;
+}
+html #stylus-popup #menu.delete footer [data-cmd=cancel] { order: 1; }
+
+/* manager delete confirm: danger button, same as popup */
+html #message-box.danger #message-box-buttons button:first-child {
+  background: var(--md-danger) !important;
+  color: var(--md-on-danger) !important;
 }
 
 '''
