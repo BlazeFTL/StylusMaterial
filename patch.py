@@ -2215,6 +2215,284 @@ html #message-box.danger #message-box-buttons button:first-child {
   color: var(--md-on-danger) !important;
 }
 
+/* ===== v4: update row + progress %, entry toasts, options header, install page, settings, config dialog ===== */
+@keyframes md-spin { to { transform: rotate(360deg); } }
+@keyframes md-toast {
+  0% { opacity: 0; transform: translateY(6px); }
+  6% { opacity: 1; transform: none; }
+  82% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: none; }
+}
+
+/* manager: progress with percentage (replaces the tiny fill inside the icon) */
+#stylus-manage #update-progress { display: none !important; }
+#stylus-manage.update-in-progress #check-all-updates i { animation: md-spin 1s linear infinite; }
+#stylus-manage #md-progress {
+  display: none;
+  order: 8;
+  flex: 1 0 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  box-sizing: border-box;
+  margin-top: 10px;
+  padding: 0 6px;
+  font-size: 13px;
+  color: var(--md-text-2);
+}
+#stylus-manage.update-in-progress #md-progress { display: flex; }
+#stylus-manage #md-progress-label { flex: 1 1 auto; min-width: 0; }
+#stylus-manage #md-progress-pct { flex: 0 0 auto; color: var(--md-primary); font-weight: 500; font-variant-numeric: tabular-nums; }
+#stylus-manage #md-progress .md-track {
+  display: block;
+  flex: 1 0 100%;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--md-surface-v);
+}
+#stylus-manage #md-progress .md-fill {
+  display: block;
+  width: var(--p, 0%);
+  height: 100%;
+  border-radius: 3px;
+  background: var(--md-primary);
+  transition: width .25s ease;
+}
+
+/* manager: apply-all / no-updates row spans the full toolbar width */
+.compact-layout #stylus-manage #update-all {
+  order: 8;
+  flex: 1 0 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  margin-top: 10px;
+}
+.compact-layout #stylus-manage #update-all:empty { display: none; }
+html #stylus-manage #update-all > button { width: 100%; height: 44px; border-radius: 22px !important; margin: 0; }
+html #stylus-manage #update-all > #check-all-updates-force {
+  background: var(--md-primary-c) !important;
+  color: var(--md-on-primary-c) !important;
+}
+#stylus-manage #update-all-no-updates {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 8px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: var(--md-hover);
+  color: var(--md-text-2);
+  font-size: 13px;
+  text-align: center;
+}
+#stylus-manage #update-all-no-updates::before { content: "\2713"; color: var(--md-primary); font-weight: 700; }
+#stylus-manage #update-all-no-updates[data-skipped-edited="true"]::after { flex: 1 0 100%; margin: 4px 0 0; }
+
+/* manager cards: install button visible, status as a toast inside the card */
+.compact-layout #stylus-manage .entry { position: relative; }
+.compact-layout #stylus-manage .entry > .actions { position: static; }
+.compact-layout #stylus-manage .entry .updater-icons > * { position: static !important; }
+.compact-layout #stylus-manage .entry.can-update .updater-icons .update,
+.compact-layout #stylus-manage .entry .can-update .update {
+  background: var(--md-primary-c);
+  border-radius: 50%;
+  cursor: pointer;
+}
+.compact-layout #stylus-manage .entry .updater-icons .update::after { content: none !important; animation: none !important; }
+.compact-layout #stylus-manage .entry .updater-icons > :not(.check-update)::after,
+.compact-layout #stylus-manage .entry.update-problem .updater-icons .check-update::after {
+  content: attr(title);
+  position: absolute;
+  top: auto;
+  left: auto;
+  right: 12px;
+  bottom: 10px;
+  z-index: 5;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: calc(100% - 28px);
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: #322f35;
+  color: #fff;
+  box-shadow: var(--md-elev2);
+  font: 12.5px/1.35 var(--family);
+  text-align: left;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  animation: md-toast 4s ease both;
+}
+.compact-layout #stylus-manage .entry.update-problem .updater-icons .check-update::after {
+  background: var(--md-danger);
+  color: var(--md-on-danger);
+  animation-duration: 7s;
+}
+
+/* options: icon + title centered together, close at the right */
+#stylus-options header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  min-height: calc(64px + env(safe-area-inset-top, 0px));
+  padding: calc(8px + env(safe-area-inset-top, 0px)) 56px 8px;
+}
+#stylus-options header img { flex: 0 0 auto; justify-self: auto; }
+#stylus-options header h1 { flex: 0 1 auto; min-width: 0; text-align: left; }
+#stylus-options header i {
+  position: absolute;
+  right: 8px;
+  top: calc(8px + env(safe-area-inset-top, 0px));
+  justify-self: auto;
+}
+
+/* install page: real button, config icon, update-url row */
+#stylus-install-usercss #install-wrapper { gap: 10px; }
+#stylus-install-usercss #install-wrapper > * { margin: 0 !important; }
+#stylus-install-usercss #install-wrapper > .install-show.w100-full { display: flex; flex-wrap: wrap; gap: 8px; flex: 1 0 100%; width: 100%; }
+html button.install {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  position: static;
+  flex: 0 0 auto;
+  gap: 8px;
+  border: 0 !important;
+  box-shadow: none !important;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 22px 0 16px !important;
+  border-radius: 22px !important;
+  background: var(--md-primary) !important;
+  color: var(--md-on-primary) !important;
+  font-size: 15px !important;
+  text-shadow: none;
+  white-space: nowrap;
+}
+html button.install::before {
+  content: "";
+  position: static;
+  display: block;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 0;
+  box-shadow: none;
+  background: currentColor !important;
+  -webkit-mask: url("@@DL@@") center / contain no-repeat;
+  mask: url("@@DL@@") center / contain no-repeat;
+}
+html button.install::after { content: none !important; }
+html button.install.reinstall { background: var(--md-primary-c) !important; color: var(--md-on-primary-c) !important; }
+#stylus-install-usercss a.configure-usercss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--md-primary-c);
+  cursor: pointer;
+}
+#stylus-install-usercss a.configure-usercss i { color: var(--md-on-primary-c) !important; font-size: 22px; }
+#stylus-install-usercss .set-update-url { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 0; }
+#stylus-install-usercss .set-update-url > label { display: flex; align-items: center; gap: 10px; flex: 1 0 100%; margin: 0; }
+#stylus-install-usercss .set-update-url > p {
+  flex: 1 0 100%;
+  margin: 0 0 0 30px;
+  opacity: 1;
+  color: var(--md-text-2);
+  font-size: 12.5px;
+  white-space: normal;
+  word-break: break-all;
+}
+#stylus-install-usercss .live-reload { display: flex; align-items: center; gap: 10px; }
+#stylus-install-usercss :is(.set-update-url > label, .live-reload) > input[type=checkbox] { margin: 0 !important; flex: 0 0 auto; }
+
+/* style settings (editor panel + install page): aligned rows, textareas never clipped */
+.compact-layout #stylus-edit #header #details-wrapper > details[open] > summary + * {
+  left: 12px;
+  right: 12px;
+  box-sizing: border-box;
+  width: auto;
+  max-width: none;
+  max-height: 60vh;
+}
+.settings .rel { display: flex; align-items: center; gap: 10px; }
+.settings .rel > label { display: inline; margin: 0; font: 500 14px/1.3 var(--family); color: var(--md-text); }
+html .settings #ss-update-url { display: block; width: 100%; height: 44px; margin-top: 8px; border-radius: 12px !important; }
+.settings #ss-scheme { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.settings #ss-scheme > div:first-child { flex: 1 0 100%; font: 500 13.5px/1.3 var(--family); color: var(--md-text-2); }
+html .settings #ss-scheme .radio-wrapper {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  margin: 0;
+  padding: 0 14px 0 10px;
+  border-radius: 20px;
+  background: var(--md-surface-v);
+  color: var(--md-text);
+  font-size: 14px;
+  cursor: pointer;
+}
+html .settings #ss-scheme .radio-wrapper:has(input:checked) { background: var(--md-primary-c); color: var(--md-on-primary-c); }
+html .settings #ss-scheme .radio-wrapper input[type=radio] { margin: 0 8px 0 0; }
+.settings :is(div, label):has(> textarea) { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.settings label[for=ss-inclusions],
+.settings label:has(> #ss-exclusions) { font: 500 13.5px/1.3 var(--family); color: var(--md-text-2); }
+.settings label:has(> #ss-exclusions) { flex: 1 0 100%; }
+.settings div:has(> #ss-inclusions) > a.icon { margin: 0; }
+html .settings label.ws-nowrap { display: inline-flex; align-items: center; gap: 8px; margin-left: auto; font: 400 13.5px/1.3 var(--family); color: var(--md-text); }
+html .settings label.ws-nowrap input { margin: 0; }
+html .settings textarea {
+  display: block;
+  flex: 1 0 100%;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 11px 14px;
+  background: var(--md-surface) !important;
+  border: 1px solid var(--md-outline) !important;
+  border-radius: 12px !important;
+  font: 400 14px/20px var(--family) !important;
+}
+html .settings textarea:not(:placeholder-shown) { min-height: 76px; }
+html .settings textarea:placeholder-shown { height: 44px; resize: none; }
+html .settings textarea::placeholder { color: var(--md-outline); opacity: 1; }
+html .settings .buttons { display: flex; align-items: center; gap: 12px; }
+
+/* config dialog: heading never clipped, rows aligned */
+html .config-dialog .config-heading { position: static; top: auto !important; margin: 0 0 6px; text-align: right; font-size: 13px; }
+html .config-dialog .config-heading:empty { display: none; }
+html .config-dialog .config-heading a {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 15px;
+  background: var(--md-primary-c);
+  color: var(--md-on-primary-c);
+  font-weight: 500;
+  text-decoration: none;
+}
+html .config-dialog .config-body label {
+  box-sizing: border-box;
+  min-height: 52px;
+  gap: 12px;
+  padding: 6px 0 !important;
+  border-top: 1px solid var(--md-outline-v) !important;
+}
+html .config-dialog .config-body label:first-child { border-top: 0 !important; }
+html .config-dialog .config-name { flex: 1 1 auto; min-width: 0; margin: 0; font-size: 15px; line-height: 1.3; }
+
 '''
 
 CLIPBOARD_JS = r'''import editor from './editor';
@@ -2380,7 +2658,7 @@ ICONS = {
     'select-all': ('\u26f6', 'M3 5h2V3c-1.1 0-2 .9-2 2zm0 8h2v-2H3v2zm4 8h2v-2H7v2zM3 9h2V7H3v2zm10-6h-2v2h2V3zm6 0v2h2c0-1.1-.9-2-2-2zM5 21v-2H3c0 1.1.9 2 2 2zm-2-4h2v-2H3v2zM9 3H7v2h2V3zm2 18h2v-2h-2v2zm8-8h2v-2h-2v2zm0 8c1.1 0 2-.9 2-2h-2v2zm0-12h2V7h-2v2zm0 8h2v-2h-2v2zm-4 4h2v-2h-2v2zm0-16h2V3h-2v2zM7 17h10V7H7v10zm2-8h6v6H9V9z'),
     'm-dashboard': ('\u2460', 'M19,5V7H15V5H19M9,5V11H5V5H9M19,13V19H15V13H19M9,17V19H5V17H9M21,3H13V9H21V3M11,3H3V13H11V3M21,11H13V21H21V11M11,15H3V21H11V15Z'),
     'm-update': ('\u2461', 'M12,18A6,6 0 0,1 6,12C6,11 6.25,10.03 6.7,9.2L5.24,7.74C4.46,8.97 4,10.43 4,12A8,8 0 0,0 12,20V23L16,19L12,15M12,4V1L8,5L12,9V6A6,6 0 0,1 18,12C18,13 17.75,13.97 17.3,14.8L18.76,16.26C19.54,15.03 20,13.57 20,12A8,8 0 0,0 12,4Z'),
-    'm-install': ('\u2462', 'M8 17V15H16V17H8M16 10L12 14L8 10H10.5V6H13.5V10H16M12 2C17.5 2 22 6.5 22 12C22 17.5 17.5 22 12 22C6.5 22 2 17.5 2 12C2 6.5 6.5 2 12 2M12 4C7.58 4 4 7.58 4 12C4 16.42 7.58 20 12 20C16.42 20 20 16.42 20 12C20 7.58 16.42 4 12 4Z'),
+    'm-install': ('\u2462', 'M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z'),
     'm-order': ('\u2463', 'M7,13V11H21V13H7M7,19V17H21V19H7M7,7V5H21V7H7M3,8V5H2V4H4V8H3M2,17V16H5V20H2V19H4V18.5H3V17.5H4V17H2M4.25,10A0.75,0.75 0 0,1 5,10.75C5,10.95 4.92,11.14 4.79,11.27L3.12,13H5V14H2V13.08L4,11H2V10H4.25Z'),
     'm-sync': ('\u2464', 'M13.03 18C13.08 18.7 13.24 19.38 13.5 20H6.5C5 20 3.69 19.5 2.61 18.43C1.54 17.38 1 16.09 1 14.58C1 13.28 1.39 12.12 2.17 11.1S4 9.43 5.25 9.15C5.67 7.62 6.5 6.38 7.75 5.43S10.42 4 12 4C13.95 4 15.6 4.68 16.96 6.04C18.32 7.4 19 9.05 19 11C19.04 11 19.07 11 19.1 11C18.36 11.07 17.65 11.23 17 11.5V11C17 9.62 16.5 8.44 15.54 7.46C14.56 6.5 13.38 6 12 6S9.44 6.5 8.46 7.46C7.5 8.44 7 9.62 7 11H6.5C5.53 11 4.71 11.34 4.03 12.03C3.34 12.71 3 13.53 3 14.5S3.34 16.29 4.03 17C4.71 17.66 5.53 18 6.5 18H13.03M19 13.5V12L16.75 14.25L19 16.5V15C20.38 15 21.5 16.12 21.5 17.5C21.5 17.9 21.41 18.28 21.24 18.62L22.33 19.71C22.75 19.08 23 18.32 23 17.5C23 15.29 21.21 13.5 19 13.5M19 20C17.62 20 16.5 18.88 16.5 17.5C16.5 17.1 16.59 16.72 16.76 16.38L15.67 15.29C15.25 15.92 15 16.68 15 17.5C15 19.71 16.79 21.5 19 21.5V23L21.25 20.75L19 18.5V20Z'),
     'm-import': ('\u2465', 'M2 12H4V17H20V12H22V17C22 18.11 21.11 19 20 19H4C2.9 19 2 18.11 2 17V12M12 15L17.55 9.54L16.13 8.13L13 11.25V2H11V11.25L7.88 8.13L6.46 9.55L12 15Z'),
@@ -2518,6 +2796,7 @@ def material_css(P):
     return (css
             .replace('@@EXT_P@@', svg_uri(ICONS['external'], '#0b57d0'))
             .replace('@@EXT_D@@', svg_uri(ICONS['external'], '#a8c7fa'))
+            .replace('@@DL@@', svg_uri(ICONS['m-install'][1], '#000'))
             .replace('@@CHEV@@', svg_uri(EXTRA_PATHS['chev'], '#747780'))
             .replace('@@CHECK_L@@', svg_uri(ICONS['check1'], '#0b57d0'))
             .replace('@@CHECK_D@@', svg_uri(ICONS['check1'], '#a8c7fa'))
@@ -2635,6 +2914,31 @@ def apply(root, args):
          '<div id="sort-wrapper">\n        <i class=i-m-sort></i>\n        <div class="select-wrapper" i18n="title:sortLabel">', 'i-m-sort'),
     ]:
         P.edit(rel, old, new, marker=mk, count=0 if mk in ('i-m-update', 'i-m-home') else 1)
+
+    print('== v4: progress %, install page icon')
+    P.edit('src/manage.html', '<div id="update-all">',
+           '<div id="md-progress" aria-hidden="true"><span id="md-progress-label">Checking for updates</span>'
+           '<b id="md-progress-pct">0%</b><span class="md-track"><span class="md-fill"></span></span></div>\n'
+           '        <div id="update-all">', marker='id="md-progress"')
+    P.edit('src/install-usercss.html', r'(<a class="configure-usercss"[^>]*>\s*)<i class=i-config></i>',
+           r'\1<i class=i-m-tune></i>', marker='i-m-tune', regex=True)
+    U = 'src/manage/updater-ui.js'
+    P.edit(U, "  document.body.classList.add('update-in-progress');\n",
+           "  document.body.classList.add('update-in-progress');\n  setMdProgress(0, 0, 0);\n",
+           marker='setMdProgress(0, 0, 0)')
+    P.edit(U, "    progress.style.width = Math.round(checked / total * maxWidth) + 'px';\n",
+           "    progress.style.width = Math.round(checked / total * maxWidth) + 'px';\n"
+           "    setMdProgress(total ? Math.min(100, Math.round(checked / total * 100)) : 0, checked, total);\n",
+           marker='setMdProgress(total')
+    P.edit(U, 'export function checkUpdate(entry, {single} = {}) {',
+           "function setMdProgress(pct, checked, total) {\n"
+           "  const el = $id('md-progress');\n"
+           "  if (!el) return;\n"
+           "  el.style.setProperty('--p', pct + '%');\n"
+           "  $id('md-progress-pct').textContent = pct + '%';\n"
+           "  $id('md-progress-label').textContent = total ? `Checking ${checked} / ${total}` : 'Checking for updates';\n"
+           "}\n\n"
+           'export function checkUpdate(entry, {single} = {}) {', marker='function setMdProgress')
 
     print('== js entry points')
     for page in PAGES:
