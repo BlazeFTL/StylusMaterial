@@ -2419,12 +2419,20 @@ html button.install.reinstall { background: var(--md-primary-c) !important; colo
 
 /* style settings (editor panel + install page): aligned rows, textareas never clipped */
 .compact-layout #stylus-edit #header #details-wrapper > details[open] > summary + * {
+  left: var(--md-pl, 12px);
+  right: auto;
+  box-sizing: border-box;
+  width: max-content;
+  min-width: 200px;
+  max-width: calc(100vw - 24px);
+  max-height: 60vh;
+}
+.compact-layout #stylus-edit #header #details-wrapper > #styleOpts[open] > summary + * {
   left: 12px;
   right: 12px;
-  box-sizing: border-box;
   width: auto;
+  min-width: 0;
   max-width: none;
-  max-height: 60vh;
 }
 .settings .rel { display: flex; align-items: center; gap: 10px; }
 .settings .rel > label { display: inline; margin: 0; font: 500 14px/1.3 var(--family); color: var(--md-text); }
@@ -2546,6 +2554,26 @@ html .config-dialog .config-name { flex: 1 1 auto; min-width: 0; margin: 0; font
 #stylus-manage.import-in-progress #md-progress { display: flex; }
 #stylus-manage.import-in-progress #import i { opacity: .4; }
 
+'''
+
+PANEL_JS = r'''export default function PanelPos() {
+  const place = el => {
+    const panel = el.querySelector(':scope > summary + *');
+    const header = el.closest('#header');
+    if (!panel || !header || !el.open) return;
+    const h = header.getBoundingClientRect();
+    const c = el.getBoundingClientRect();
+    const max = h.width - panel.offsetWidth - 12;
+    panel.style.setProperty('--md-pl', Math.round(Math.max(12, Math.min(c.left - h.left, max))) + 'px');
+  };
+  document.addEventListener('toggle', e => {
+    const el = e.target;
+    if (el.matches?.('#details-wrapper > details')) place(el);
+  }, true);
+  addEventListener('resize', () => {
+    for (const el of $$('#details-wrapper > details[open]')) place(el);
+  });
+}
 '''
 
 CLIPBOARD_JS = r'''import editor from './editor';
@@ -2875,6 +2903,7 @@ def apply(root, args):
         # i.e. loaded after the page CSS (src/css/* would land in the early shared chunk)
         P.put(f'src/material/{page}.css', "@import './material.css';\n")
     P.put('src/edit/clipboard-bar.js', CLIPBOARD_JS)
+    P.put('src/edit/panel-pos.js', PANEL_JS)
 
     print('== icons')
     for name, spec in ICONS.items():
@@ -3032,6 +3061,10 @@ def apply(root, args):
                  'ClipboardBar from', after="import EditorHeader from './editor-header';\n")
     P.edit('src/edit/index.js', '  EditorHeader();\n', '  EditorHeader();\n  ClipboardBar();\n',
            marker='ClipboardBar();')
+    P.add_import('src/edit/index.js', "import PanelPos from './panel-pos';\n",
+                 'PanelPos from', after="import ClipboardBar from './clipboard-bar';\n")
+    P.edit('src/edit/index.js', '  ClipboardBar();\n', '  ClipboardBar();\n  PanelPos();\n',
+           marker='PanelPos();')
 
     print('== mobile behavior (card list always, compact layout always, editor gutter)')
     # backups can import prefs (manage.newUI=false, compactWidth) that break the card layout
