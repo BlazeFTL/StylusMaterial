@@ -2493,6 +2493,59 @@ html .config-dialog .config-body label {
 html .config-dialog .config-body label:first-child { border-top: 0 !important; }
 html .config-dialog .config-name { flex: 1 1 auto; min-width: 0; margin: 0; font-size: 15px; line-height: 1.3; }
 
+/* ===== v5: editor panels (Publish / Sections) aligned, publish tick, import progress ===== */
+.compact-layout #stylus-edit #header #details-wrapper > details[open] > summary + * {
+  margin: 0;
+  padding: 16px;
+}
+.compact-layout #stylus-edit #header #toc { padding: 8px 12px; list-style: none; }
+.compact-layout #stylus-edit #header #toc li {
+  display: block;
+  min-height: 40px;
+  padding: 10px 4px;
+  box-sizing: border-box;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  border-radius: 10px;
+}
+.compact-layout #stylus-edit #header #toc li:active { background: var(--md-press); }
+.compact-layout #stylus-edit #header #toc:empty::after { display: block; padding: 10px 4px; }
+.compact-layout #stylus-edit #publish > main { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
+.compact-layout #stylus-edit #publish > main > * { margin: 0; padding: 0; min-width: 0; }
+.compact-layout #stylus-edit #publish #usw-url { display: block; font: 500 14px/1.4 var(--family); overflow-wrap: anywhere; }
+.compact-layout #stylus-edit #publish > main > p { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.compact-layout #stylus-edit #publish > main > p > button { margin: 0; flex: 0 0 auto; }
+.compact-layout #stylus-edit #usw-progress {
+  position: static;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  min-height: 40px;
+  min-width: 0;
+}
+.compact-layout #stylus-edit #usw-progress > :is(.success, .unchanged) {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  border-radius: 50%;
+  background: var(--md-primary-c);
+  color: var(--md-on-primary-c);
+  font: 700 16px/1 var(--family);
+}
+.compact-layout #stylus-edit #usw-progress > :is(.success, .unchanged):not(:last-child) { display: none; }
+.compact-layout #stylus-edit #usw-progress > .error { flex: 1 0 100%; margin: 0; }
+.compact-layout #stylus-edit #usw-progress > .error + div { flex: 1 0 100%; }
+.compact-layout #stylus-edit #usw-progress:has(> .error) { flex: 1 0 100%; }
+
+/* manager: import shows the same progress bar as update check */
+#stylus-manage.import-in-progress #md-progress { display: flex; }
+#stylus-manage.import-in-progress #import i { opacity: .4; }
+
 '''
 
 CLIPBOARD_JS = r'''import editor from './editor';
@@ -2939,6 +2992,38 @@ def apply(root, args):
            "  $id('md-progress-label').textContent = total ? `Checking ${checked} / ${total}` : 'Checking for updates';\n"
            "}\n\n"
            'export function checkUpdate(entry, {single} = {}) {', marker='function setMdProgress')
+
+    print('== v5: import progress bar')
+    IE = 'src/manage/import-export.js'
+    P.edit(IE, "const btnImport = $id('import');\n",
+           "const btnImport = $id('import');\n\n"
+           "function setImportProgress(pct, label) {\n"
+           "  const el = $id('md-progress');\n"
+           "  if (!el) return;\n"
+           "  el.style.setProperty('--p', pct + '%');\n"
+           "  $id('md-progress-pct').textContent = pct + '%';\n"
+           "  $id('md-progress-label').textContent = label;\n"
+           "}\n",
+           marker='function setImportProgress')
+    P.edit(IE, "  btnImport.dataset.after = `...`;\n  await Promise.all(json.map(analyze));\n",
+           "  document.body.classList.add('import-in-progress');\n"
+           "  setImportProgress(0, 'Analyzing');\n"
+           "  await Promise.all(json.map(analyze));\n"
+           "  const importTotal = items.reduce((n, g) => n + g.length, 0);\n"
+           "  let importDone = 0;\n"
+           "  setImportProgress(0, `Importing 0 / ${importTotal}`);\n",
+           marker='const importTotal')
+    P.edit(IE, "      updateStats(style || item, item[INFO], err);\n    }\n  }\n",
+           "      updateStats(style || item, item[INFO], err);\n    }\n"
+           "    importDone += group.length;\n"
+           "    setImportProgress(Math.min(99, Math.round(importDone / importTotal * 100)),\n"
+           "      `Importing ${importDone} / ${importTotal}`);\n  }\n",
+           marker='importDone += group.length')
+    P.edit(IE, "  btnImport.disabled = false;\n  delete btnImport.dataset.after;\n",
+           "  setImportProgress(100, 'Done');\n"
+           "  btnImport.disabled = false;\n"
+           "  document.body.classList.remove('import-in-progress');\n",
+           marker="classList.remove('import-in-progress')")
 
     print('== js entry points')
     for page in PAGES:
