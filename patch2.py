@@ -70,15 +70,22 @@ addEventListener('beforeinput', e => {
 
 const onClip = e => {
   const cm = cmOf(e.target);
-  if (!cm || !e.clipboardData) return;
+  if (!cm) return;
   try {
     cm.display.input.pollSelection?.();
   } catch {
     // ignore
   }
   if (!cm.somethingSelected()) return;
-  e.clipboardData.setData('text/plain', cm.getSelections().join('\n'));
+  const text = cm.getSelections().join('\n');
+  try {
+    e.clipboardData?.setData('text/plain', text);
+  } catch {
+    // ignore
+  }
   e.preventDefault();
+  // some Android builds drop clipboardData in selection-menu copy: write it directly too
+  setTimeout(() => navigator.clipboard?.writeText(text).catch(() => {}), 0);
   if (e.type === 'cut') cm.replaceSelection('', null, 'cut');
 };
 addEventListener('copy', onClip, true);
@@ -411,26 +418,27 @@ export default function SearchBar() {
 }
 '''
 
-SEARCH_CSS = r'''/* toolbar: Styles, Search, Beautify ... Docs, Select all, Copy, Paste (end of row 1); Homepage on row 2 */
+SEARCH_CSS = r'''/* toolbar row 1: Styles, Search, Beautify, RegExp, Select all, Copy, Paste; row 2: Import, Export, Docs, UserCSS docs, Homepage */
 .compact-layout #stylus-edit #header #cm-search { order: 11; }
 .compact-layout #stylus-edit #header #beautify { order: 12; }
 .compact-layout #stylus-edit #header #testRE { order: 13; }
-.compact-layout #stylus-edit #header #from-mozilla { order: 14; }
-.compact-layout #stylus-edit #header #to-mozilla { order: 15; }
-.compact-layout #stylus-edit #header #basic-info a[href*="Writing-styles"] { order: 16; }
-.compact-layout #stylus-edit #header #usercss-docs { order: 17; }
-.compact-layout #stylus-edit #header #cm-select-all { order: 30; margin-left: auto !important; }
-.compact-layout #stylus-edit #header #cm-copy { order: 31; }
-.compact-layout #stylus-edit #header #cm-paste { order: 32; }
-.compact-layout #stylus-edit #header #url {
-  order: 34;
-  margin: 0 !important;
-  flex: 0 0 clamp(56px, calc((100% - 28px) / 8), 96px);
+.compact-layout #stylus-edit #header #cm-select-all { order: 14; margin-left: auto !important; }
+.compact-layout #stylus-edit #header #cm-copy { order: 15; }
+.compact-layout #stylus-edit #header #cm-paste { order: 16; }
+.compact-layout #stylus-edit #header .md-break-3 { order: 17; }
+.compact-layout #stylus-edit #header #from-mozilla { order: 18; }
+.compact-layout #stylus-edit #header #to-mozilla { order: 19; }
+.compact-layout #stylus-edit #header #basic-info a[href*="Writing-styles"] { order: 20; }
+.compact-layout #stylus-edit #header #usercss-docs { order: 21; }
+.compact-layout #stylus-edit #header #url { order: 22; margin: 0 !important; }
+.compact-layout #stylus-edit #header #preview-error { order: 23; }
+.compact-layout #stylus-edit #header #new-as { order: 24; }
+/* row 2 buttons: same width as a row 1 column (7 per row), left aligned under Styles */
+.compact-layout #stylus-edit #header :is(#from-mozilla, #to-mozilla, #basic-info a[href*="Writing-styles"], #usercss-docs, #url, #preview-error) {
+  flex: 0 0 clamp(56px, calc((100% - 24px) / 7), 96px);
   width: auto;
   max-width: none;
 }
-.compact-layout #stylus-edit #header #preview-error { order: 34; }
-.compact-layout #stylus-edit #header #new-as { order: 34; }
 .compact-layout #stylus-edit #header #preview-error[hidden],
 .compact-layout #stylus-edit #header #url:not([href^="http"]) { display: none !important; }
 
@@ -507,6 +515,7 @@ SEARCH_CSS = r'''/* toolbar: Styles, Search, Beautify ... Docs, Select all, Copy
 EDIT_HTML_BTN = (
     '\n        <a tabindex="0" id="cm-search" data-label="Search" title="Search and replace">'
     '<i class="i-search"></i></a>'
+    '\n        <div class="md-break md-break-3"></div>'
 )
 
 
