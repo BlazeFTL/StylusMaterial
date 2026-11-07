@@ -4,7 +4,8 @@ Stylus Material patch #2 (runs after patch.py; patch.py calls it automatically).
 
   - Search / replace bar in the editor top panel (new "Search" toolbar button)
   - Gboard / Android text-selection fixes for CodeMirror 5:
-      * line numbers no longer end up in selection, Copy, Cut (numbers are drawn by CSS, not text)
+      * line numbers and fold/lint markers are drawn outside the editable lines, so selection, Copy, Cut
+        and Gboard's own Copy/Select all see only the real text (no numbers, no extra blank lines)
       * Gboard Backspace / "Clear" on a selection no longer desyncs the editor display
 
 Standalone: python patch2.py [repo]   (after patch.py)
@@ -16,33 +17,186 @@ from pathlib import Path
 GBOARD_JS = r'''import {CodeMirror} from '@/cm';
 import './gboard-fix.css';
 
-const strip = el => {
-  const t = el.textContent;
-  if (t) {
-    el.dataset.ln = t;
-    el.textContent = '';
-  }
-};
-
-const scan = node => {
-  if (node.nodeType !== 1) return;
-  if (node.classList.contains('CodeMirror-linenumber')) {
-    strip(node);
-  } else {
-    for (const el of node.querySelectorAll('.CodeMirror-linenumber')) strip(el);
-  }
-};
+const LN = 'md-linenumbers';
+const NATIVE = 'CodeMirror-linenumbers';
 
 CodeMirror.defineInitHook(cm => {
-  const div = cm.display.lineDiv;
-  new MutationObserver(list => {
-    for (const m of list) {
-      const t = m.target;
-      if (t.nodeType === 1 && t.classList.contains('CodeMirror-linenumber')) strip(t);
-      for (const n of m.addedNodes) scan(n);
+  if (!cm.display.input?.needsContentAttribute) return;
+  const marks = {};
+  const store = new WeakMap();
+  const pools = new Map();
+  const numbers = cm.getOption('lineNumbers');
+  const origInfo = cm.lineInfo;
+  const origSet = cm.setGutterMarker;
+  const lineOf = l => (typeof l === 'number' ? cm.getLineHandle(l) : l);
+  let lastW = '';
+  let queued = false;
+
+  const queue = () => {
+    if (queued) return;
+    queued = true;
+    Promise.resolve().then(render);
+  };
+
+  const keep = (h, id, node) => {
+    let m = store.get(h);
+    if (!m) store.set(h, m = {});
+    m[id] = node;
+    (marks[id] || (marks[id] = new Set())).add(h);
+  };
+
+  cm.setGutterMarker = (line, id, node) => {
+    const h = lineOf(line);
+    if (!h) return null;
+    if (node) {
+      keep(h, id, node);
+    } else {
+      const m = store.get(h);
+      if (m) delete m[id];
+      if (marks[id]) marks[id].delete(h);
     }
-  }).observe(div, {childList: true, subtree: true});
-  scan(div);
+    queue();
+    return h;
+  };
+
+  cm.clearGutter = id => {
+    const set = marks[id];
+    if (set) {
+      for (const h of set) {
+        const m = store.get(h);
+        if (m) delete m[id];
+      }
+      set.clear();
+    }
+    queue();
+  };
+
+  cm.lineInfo = function (line) {
+    const info = origInfo.call(this, line);
+    const m = info && info.handle && store.get(info.handle);
+    if (m && Object.keys(m).length) info.gutterMarkers = Object.assign({}, info.gutterMarkers, m);
+    return info;
+  };
+
+  const adopt = () => {
+    cm.doc.iter(h => {
+      const gm = h.gutterMarkers;
+      if (!gm) return;
+      for (const id of Object.keys(gm)) {
+        if (!gm[id]) continue;
+        keep(h, id, gm[id]);
+        origSet.call(cm, h, id, null);
+      }
+    });
+  };
+
+  const layerOf = col => {
+    let pool = pools.get(col);
+    if (!pool) {
+      const el = document.createElement('div');
+      el.className = 'md-gl';
+      col.append(el);
+      pools.set(col, pool = {el, map: new Map()});
+    } else if (!pool.el.isConnected) {
+      col.append(pool.el);
+    }
+    return pool;
+  };
+
+  function render() {
+    queued = false;
+    const d = cm.display;
+    if (!d.wrapper.isConnected) return;
+    const specs = d.gutterSpecs || cm.getOption('gutters').map(c => ({className: c.className || c}));
+    const ids = specs.map(s => s.className);
+    const cols = ids.map((_, i) => d.gutters.childNodes[i]);
+    const numCol = numbers ? cols[ids.indexOf(LN)] : null;
+    if (numCol) {
+      const w = Math.max(20, String(cm.lastLine() + 1).length * cm.defaultCharWidth()) + 9 + 'px';
+      if (w !== lastW || numCol.style.width !== w) {
+        lastW = w;
+        numCol.style.width = w;
+        Promise.resolve().then(() => cm.refresh());
+      }
+    }
+    const seen = new Map();
+    const touch = (col, h, top, make, update) => {
+      const pool = layerOf(col);
+      let w = pool.map.get(h);
+      if (!w) {
+        w = make();
+        pool.map.set(h, w);
+        pool.el.append(w);
+      }
+      update(w);
+      if (w._t !== top) {
+        w._t = top;
+        w.style.top = top + 'px';
+      }
+      let s = seen.get(pool);
+      if (!s) seen.set(pool, s = new Set());
+      s.add(h);
+    };
+    for (const v of d.view) {
+      if (v.hidden || !v.line) continue;
+      const top = cm.heightAtLine(v.line, 'local');
+      const m = store.get(v.line);
+      for (let i = 0; i < ids.length; i++) {
+        const col = cols[i];
+        if (!col) continue;
+        if (numbers && ids[i] === LN) {
+          const text = String(cm.getLineNumber(v.line) + 1);
+          touch(col, v.line, top, () => {
+            const e = document.createElement('div');
+            e.className = 'CodeMirror-linenumber CodeMirror-gutter-elt';
+            return e;
+          }, w => {
+            if (w._n !== text) {
+              w._n = text;
+              w.textContent = text;
+            }
+          });
+        } else if (m && m[ids[i]]) {
+          const node = m[ids[i]];
+          touch(col, v.line, top, () => {
+            const e = document.createElement('div');
+            e.className = 'CodeMirror-gutter-elt';
+            return e;
+          }, w => {
+            if (w.firstChild !== node) w.replaceChildren(node);
+          });
+        }
+      }
+    }
+    for (const pool of pools.values()) {
+      const s = seen.get(pool);
+      for (const [h, w] of pool.map) {
+        if (!s || !s.has(h)) {
+          w.remove();
+          pool.map.delete(h);
+        }
+      }
+    }
+  }
+
+  cm.operation(() => {
+    if (numbers) {
+      cm.setOption('lineNumbers', false);
+      const list = cm.getOption('gutters').slice();
+      const at = list.indexOf(NATIVE);
+      list.splice(at < 0 ? list.length : at, 0, LN);
+      cm.setOption('gutters', list);
+    }
+    adopt();
+  });
+  cm.refresh();
+  cm.on('update', render);
+  cm.on('refresh', queue);
+  cm.on('swapDoc', () => {
+    adopt();
+    cm.refresh();
+  });
+  queue();
 });
 
 const cmOf = t => (t && t.nodeType === 1 ? t : t && t.parentElement)?.closest?.('.CodeMirror')?.CodeMirror;
@@ -77,10 +231,12 @@ addEventListener('input', e => {
 }, true);
 '''
 
-GBOARD_CSS = r'''.CodeMirror-linenumber[data-ln]::before { content: attr(data-ln); }
+GBOARD_CSS = r'''.CodeMirror-gutter { position: relative; }
+.md-gl { position: absolute; top: 0; left: 0; width: 100%; }
+.md-gl > * { position: absolute; left: 0; width: 100%; box-sizing: border-box; }
 .CodeMirror-gutters,
 .CodeMirror-gutter-wrapper,
-.CodeMirror-linenumber {
+.md-gl {
   -webkit-user-select: none !important;
   -moz-user-select: none !important;
   user-select: none !important;
@@ -403,11 +559,11 @@ SEARCH_CSS = r'''/* toolbar order: Styles, Search, Beautify ... Homepage | Selec
 .compact-layout #stylus-edit #header #to-mozilla { order: 15; }
 .compact-layout #stylus-edit #header #basic-info a[href*="Writing-styles"] { order: 16; }
 .compact-layout #stylus-edit #header #usercss-docs { order: 17; }
-.compact-layout #stylus-edit #header #url { order: 18; margin: 0 !important; }
-.compact-layout #stylus-edit #header #preview-error { order: 19; }
+.compact-layout #stylus-edit #header #url { order: 19; margin: 0 auto 0 0 !important; }
+.compact-layout #stylus-edit #header #preview-error { order: 20; }
 .compact-layout #stylus-edit #header #preview-error[hidden],
 .compact-layout #stylus-edit #header #url:not([href^="http"]) { display: none !important; }
-.compact-layout #stylus-edit #header .md-break-3 { order: 29; }
+.compact-layout #stylus-edit #header .md-break-3 { order: 18; }
 .compact-layout #stylus-edit #header #cm-select-all { order: 30; margin-left: auto !important; }
 .compact-layout #stylus-edit #header #cm-copy { order: 31; }
 .compact-layout #stylus-edit #header #cm-paste { order: 32; }
@@ -499,6 +655,15 @@ def apply(root, P, log, warn):
     P.edit('src/edit.html',
            r'(id="cm-paste"[^>]*>\s*<i class="i-paste"></i>\s*</a>)',
            r'\1' + EDIT_HTML_BTN, marker='id="cm-search"', regex=True)
+
+    CMF = 'src/edit/codemirror-factory.js'
+    P.edit(CMF, "const BM_CLICKER = 'CodeMirror-linenumbers';\n",
+           "const BM_CLICKER = 'CodeMirror-linenumbers';\n"
+           "const isBmGutter = name => name === BM_CLICKER || name === 'md-linenumbers';\n",
+           marker='const isBmGutter')
+    P.edit(CMF, 'switch (name === BM_CLICKER && e.button)', 'switch (isBmGutter(name) && e.button)',
+           marker='switch (isBmGutter')
+    P.edit(CMF, 'if (name === BM_CLICKER) {', 'if (isBmGutter(name)) {', marker='if (isBmGutter(name))')
 
     IDX = 'src/edit/index.js'
     P.add_import(IDX, "import './gboard-fix';\n", "'./gboard-fix'")
