@@ -251,27 +251,16 @@ function replaceAll() {
   tally(n);
 }
 
-function layout() {
-  if (!isOpen) return;
-  const name = $('#name');
-  const top = Math.round((name ? name.getBoundingClientRect().bottom : header.getBoundingClientRect().top + 48)
-    - header.getBoundingClientRect().top) + 8;
-  bar.style.top = top + 'px';
-  header.style.setProperty('--md-sb-h', (top + bar.offsetHeight + 8) + 'px');
-}
-
 function open() {
   if (!isOpen) {
     isOpen = true;
     bar.hidden = false;
     header.classList.add('md-sb-on');
-    if (getComputedStyle(header).position === 'static') header.style.position = 'relative';
     const cm = activeCm();
     if (cm && cm.somethingSelected()) {
       const t = cm.getSelection();
       if (t && t.length < 200 && !t.includes('\n')) findEl.value = t;
     }
-    layout();
     if (findEl.value) refresh();
   }
   findEl.focus();
@@ -283,7 +272,6 @@ function close() {
   bar.hidden = true;
   clearTimeout(timer);
   header.classList.remove('md-sb-on');
-  header.style.removeProperty('--md-sb-h');
   for (const cm of getEds()) setOverlay(cm, '');
   clearCur();
 }
@@ -302,7 +290,6 @@ function toggleReplace() {
   isRep = !isRep;
   repRow.hidden = !isRep;
   toggleEl.classList.toggle('on', isRep);
-  layout();
   if (isRep) replEl.focus();
 }
 
@@ -390,7 +377,6 @@ function build() {
       close();
     }
   });
-  addEventListener('resize', layout);
 }
 
 export default function SearchBar() {
@@ -409,27 +395,36 @@ export default function SearchBar() {
 }
 '''
 
-SEARCH_CSS = r'''.compact-layout #stylus-edit #cm-search { order: 13; }
+SEARCH_CSS = r'''/* toolbar order: Styles, Search, Beautify ... Homepage | Select all, Copy, Paste (right) */
+.compact-layout #stylus-edit #header #cm-search { order: 11; }
+.compact-layout #stylus-edit #header #beautify { order: 12; }
+.compact-layout #stylus-edit #header #testRE { order: 13; }
+.compact-layout #stylus-edit #header #from-mozilla { order: 14; }
+.compact-layout #stylus-edit #header #to-mozilla { order: 15; }
+.compact-layout #stylus-edit #header #basic-info a[href*="Writing-styles"] { order: 16; }
+.compact-layout #stylus-edit #header #usercss-docs { order: 17; }
+.compact-layout #stylus-edit #header #url { order: 18; margin: 0 !important; }
+.compact-layout #stylus-edit #header #preview-error { order: 19; }
+.compact-layout #stylus-edit #header #preview-error[hidden],
+.compact-layout #stylus-edit #header #url:not([href^="http"]) { display: none !important; }
+.compact-layout #stylus-edit #header .md-break-3 { order: 29; }
+.compact-layout #stylus-edit #header #cm-select-all { order: 30; margin-left: auto !important; }
+.compact-layout #stylus-edit #header #cm-copy { order: 31; }
+.compact-layout #stylus-edit #header #cm-paste { order: 32; }
 
+/* search bar: replaces the toolbar rows while open (normal flow, no fixed heights) */
+.compact-layout #stylus-edit #header.md-sb-on :is([data-label], .md-break, details, #new-as) { display: none !important; }
 #header > #md-sb {
-  position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 6;
+  order: 4;
+  flex: 1 1 100%;
   box-sizing: border-box;
   margin: 0 !important;
-  padding: 0 10px;
+  padding: 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  background: var(--md-surface, var(--bg, #fff));
 }
-html:not(.compact-layout) #header > #md-sb { bottom: 0; }
 #md-sb[hidden], #md-sb .md-sb-row[hidden] { display: none !important; }
-.compact-layout #stylus-edit #header.md-sb-on {
-  height: var(--md-sb-h) !important;
-  overflow: hidden !important;
-}
 #md-sb .md-sb-row { display: flex; align-items: center; gap: 2px; }
 #md-sb .md-sb-field { position: relative; flex: 1 1 auto; min-width: 0; margin-right: 2px; }
 #md-sb input {
@@ -490,6 +485,7 @@ html:not(.compact-layout) #header > #md-sb { bottom: 0; }
 EDIT_HTML_BTN = (
     '\n        <a tabindex="0" id="cm-search" data-label="Search" title="Search and replace">'
     '<i class="i-search"></i></a>'
+    '\n        <div class="md-break md-break-3"></div>'
 )
 
 
