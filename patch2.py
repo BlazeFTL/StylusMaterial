@@ -16,12 +16,18 @@ from pathlib import Path
 GBOARD_JS = r'''import {CodeMirror} from '@/cm';
 import './gboard-fix.css';
 
+const cmOf = t => (t && t.nodeType === 1 ? t : t && t.parentElement)?.closest?.('.CodeMirror')?.CodeMirror;
+
 const strip = el => {
   const t = el.textContent;
-  if (t) {
-    el.dataset.ln = t;
-    el.textContent = '';
+  const row = el.parentElement?.parentElement;
+  if (row) {
+    if (t) row.dataset.ln = t;
+    row.style.setProperty('--md-g', cmOf(row)?.display.sizer.style.marginLeft || '0px');
+    row.style.setProperty('--md-lnl', el.style.left || '0px');
+    row.style.setProperty('--md-lnw', el.style.width || '20px');
   }
+  if (t) el.textContent = '';
 };
 
 const scan = node => {
@@ -45,7 +51,6 @@ CodeMirror.defineInitHook(cm => {
   scan(div);
 });
 
-const cmOf = t => (t && t.nodeType === 1 ? t : t && t.parentElement)?.closest?.('.CodeMirror')?.CodeMirror;
 const norm = s => s.replace(/[\s\u200b]/g, '');
 const DELETE = /^delete(Content|Word|SoftLine|HardLine|Entire)/;
 const HEAL = /^(delete|insertFromPaste|insertReplacement)/;
@@ -100,7 +105,22 @@ addEventListener('input', e => {
 }, true);
 '''
 
-GBOARD_CSS = r'''.CodeMirror-linenumber[data-ln]::before { content: attr(data-ln); }
+GBOARD_CSS = r'''.CodeMirror-gutter-wrapper:not(:has(.CodeMirror-gutter-elt:not(.CodeMirror-linenumber))) { display: none !important; }
+.CodeMirror-code > div[data-ln]::before {
+  content: attr(data-ln);
+  position: absolute;
+  top: 0;
+  left: calc(var(--md-lnl, 0px) - var(--md-g, 0px));
+  box-sizing: content-box;
+  width: var(--md-lnw, 20px);
+  padding: 0 3px 0 5px;
+  text-align: right;
+  white-space: nowrap;
+  color: color-mix(in srgb, currentColor 55%, transparent);
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
 .CodeMirror-gutters,
 .CodeMirror-gutter-wrapper,
 .CodeMirror-linenumber {
@@ -418,11 +438,12 @@ export default function SearchBar() {
 }
 '''
 
-SEARCH_CSS = r'''/* toolbar row 1: Styles, Search, Beautify, RegExp, Select all, Copy, Paste; row 2: Import, Export, Docs, UserCSS docs, Homepage */
-.compact-layout #stylus-edit #header #cm-search { order: 11; }
-.compact-layout #stylus-edit #header #beautify { order: 12; }
-.compact-layout #stylus-edit #header #testRE { order: 13; }
-.compact-layout #stylus-edit #header #cm-select-all { order: 14; margin-left: auto !important; }
+SEARCH_CSS = r'''/* row 1: Styles, Beautify, RegExp ... Select all, Search, Copy, Paste (right); row 2: the rest. Fits in one row when possible (.md-one-row) */
+.compact-layout #stylus-edit #header #cancel-button { order: 10; }
+.compact-layout #stylus-edit #header #beautify { order: 11; }
+.compact-layout #stylus-edit #header #testRE { order: 12; }
+.compact-layout #stylus-edit #header #cm-select-all { order: 13; margin-left: auto !important; }
+.compact-layout #stylus-edit #header #cm-search { order: 14; }
 .compact-layout #stylus-edit #header #cm-copy { order: 15; }
 .compact-layout #stylus-edit #header #cm-paste { order: 16; }
 .compact-layout #stylus-edit #header .md-break-3 { order: 17; }
@@ -433,11 +454,32 @@ SEARCH_CSS = r'''/* toolbar row 1: Styles, Search, Beautify, RegExp, Select all,
 .compact-layout #stylus-edit #header #url { order: 22; margin: 0 !important; }
 .compact-layout #stylus-edit #header #preview-error { order: 23; }
 .compact-layout #stylus-edit #header #new-as { order: 24; }
-/* row 2 buttons: same width as a row 1 column (7 per row), left aligned under Styles */
-.compact-layout #stylus-edit #header :is(#from-mozilla, #to-mozilla, #basic-info a[href*="Writing-styles"], #usercss-docs, #url, #preview-error) {
-  flex: 0 0 clamp(56px, calc((100% - 24px) / 7), 96px);
-  width: auto;
-  max-width: none;
+.compact-layout #stylus-edit #header.md-one-row .md-break-3 { display: none !important; }
+.compact-layout #stylus-edit #header.md-one-row #from-mozilla { order: 13; }
+.compact-layout #stylus-edit #header.md-one-row #to-mozilla { order: 14; }
+.compact-layout #stylus-edit #header.md-one-row #basic-info a[href*="Writing-styles"] { order: 15; }
+.compact-layout #stylus-edit #header.md-one-row #usercss-docs { order: 16; }
+.compact-layout #stylus-edit #header.md-one-row #url { order: 17; }
+.compact-layout #stylus-edit #header.md-one-row #preview-error { order: 18; }
+.compact-layout #stylus-edit #header.md-one-row #cm-select-all { order: 20; }
+.compact-layout #stylus-edit #header.md-one-row #cm-search { order: 21; }
+.compact-layout #stylus-edit #header.md-one-row #cm-copy { order: 22; }
+.compact-layout #stylus-edit #header.md-one-row #cm-paste { order: 23; }
+.compact-layout #stylus-edit #header :is(#cancel-button, #cm-search, #beautify, #testRE, #cm-select-all, #cm-copy, #cm-paste, #from-mozilla, #to-mozilla, #basic-info a[href*="Writing-styles"], #usercss-docs, #url, #preview-error) {
+  flex: 0 0 auto !important;
+  width: clamp(44px, calc((100% - 24px) / 7), 60px) !important;
+  min-width: 0 !important;
+  max-width: none !important;
+}
+.compact-layout #stylus-edit #header.md-one-row :is(#cancel-button, #cm-search, #beautify, #testRE, #cm-select-all, #cm-copy, #cm-paste, #from-mozilla, #to-mozilla, #basic-info a[href*="Writing-styles"], #usercss-docs, #url, #preview-error) {
+  width: clamp(40px, calc((100% - (var(--md-n, 8) - 1) * 4px) / var(--md-n, 8)), 62px) !important;
+}
+.compact-layout #stylus-edit #header.md-one-row [data-label]:not(#cancel-button)::after,
+.compact-layout #stylus-edit #header.md-one-row #cancel-button::before {
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  font-size: 10px !important;
+  line-height: 1.1 !important;
 }
 .compact-layout #stylus-edit #header #preview-error[hidden],
 .compact-layout #stylus-edit #header #url:not([href^="http"]) { display: none !important; }
@@ -512,6 +554,44 @@ SEARCH_CSS = r'''/* toolbar row 1: Styles, Search, Beautify, RegExp, Select all,
 .md-find-cur { background: rgba(255, 140, 0, .62) !important; outline: 1px solid #f57c00; border-radius: 2px; }
 '''
 
+TOOLBAR_JS = r'''const IDS = ['cancel-button', 'cm-search', 'beautify', 'testRE', 'cm-select-all', 'cm-copy', 'cm-paste',
+  'from-mozilla', 'to-mozilla', 'usercss-docs', 'url', 'preview-error'];
+const MIN = 40;
+
+export default function ToolbarFit() {
+  const h = document.getElementById('header');
+  if (!h) return;
+  let raf = 0;
+  const run = () => {
+    raf = 0;
+    if (h.classList.contains('md-sb-on')) return;
+    const list = [
+      ...IDS.map(id => document.getElementById(id)),
+      h.querySelector('#basic-info a[href*="Writing-styles"]'),
+    ].filter(el => el && el.getClientRects().length);
+    const n = list.length;
+    if (!n) return;
+    const cs = getComputedStyle(h);
+    const inner = h.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);
+    const gap = parseFloat(cs.columnGap) || 4;
+    const one = n * MIN + (n - 1) * gap <= inner;
+    if (h.classList.contains('md-one-row') !== one) h.classList.toggle('md-one-row', one);
+    if (h.style.getPropertyValue('--md-n') !== String(n)) h.style.setProperty('--md-n', n);
+  };
+  const schedule = () => {
+    if (!raf) raf = requestAnimationFrame(run);
+  };
+  new ResizeObserver(schedule).observe(h);
+  new MutationObserver(schedule).observe(h, {
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['hidden', 'href', 'class', 'style'],
+  });
+  document.fonts?.ready.then(schedule);
+  schedule();
+}
+'''
+
 EDIT_HTML_BTN = (
     '\n        <a tabindex="0" id="cm-search" data-label="Search" title="Search and replace">'
     '<i class="i-search"></i></a>'
@@ -525,6 +605,7 @@ def apply(root, P, log, warn):
     P.put('src/edit/gboard-fix.css', GBOARD_CSS)
     P.put('src/edit/search-bar.js', SEARCH_JS)
     P.put('src/edit/search-bar.css', SEARCH_CSS)
+    P.put('src/edit/toolbar-fit.js', TOOLBAR_JS)
 
     P.edit('src/edit.html',
            r'(id="cm-paste"[^>]*>\s*<i class="i-paste"></i>\s*</a>)',
@@ -534,7 +615,10 @@ def apply(root, P, log, warn):
     P.add_import(IDX, "import './gboard-fix';\n", "'./gboard-fix'")
     P.add_import(IDX, "import SearchBar from './search-bar';\n", 'SearchBar from',
                  after="import PanelPos from './panel-pos';\n")
+    P.add_import(IDX, "import ToolbarFit from './toolbar-fit';\n", 'ToolbarFit from',
+                 after="import SearchBar from './search-bar';\n")
     P.edit(IDX, '  PanelPos();\n', '  PanelPos();\n  SearchBar();\n', marker='SearchBar();')
+    P.edit(IDX, '  SearchBar();\n', '  SearchBar();\n  ToolbarFit();\n', marker='ToolbarFit();')
 
 
 if __name__ == '__main__':
