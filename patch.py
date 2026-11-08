@@ -3179,6 +3179,12 @@ def main():
         run(['pnpm', 'install'], root)
 
     apply(root, args)
+    try:
+        import patch2
+    except ImportError:
+        warn('patch2.py not found next to patch.py')
+    else:
+        patch2.apply(root, Patcher(root), log, warn)
     build_icons(root)
     if args.build:
         build(root)

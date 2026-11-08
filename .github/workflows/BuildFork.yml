@@ -23,6 +23,7 @@ on:
     branches: [main, master]
     paths:
       - patch.py
+      - patch2.py
       - .github/workflows/BuildFork.yml
 
 permissions:
