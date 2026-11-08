@@ -16,18 +16,12 @@ from pathlib import Path
 GBOARD_JS = r'''import {CodeMirror} from '@/cm';
 import './gboard-fix.css';
 
-const cmOf = t => (t && t.nodeType === 1 ? t : t && t.parentElement)?.closest?.('.CodeMirror')?.CodeMirror;
-
 const strip = el => {
   const t = el.textContent;
-  const row = el.parentElement?.parentElement;
-  if (row) {
-    if (t) row.dataset.ln = t;
-    row.style.setProperty('--md-g', cmOf(row)?.display.sizer.style.marginLeft || '0px');
-    row.style.setProperty('--md-lnl', el.style.left || '0px');
-    row.style.setProperty('--md-lnw', el.style.width || '20px');
+  if (t) {
+    el.dataset.ln = t;
+    el.textContent = '';
   }
-  if (t) el.textContent = '';
 };
 
 const scan = node => {
@@ -51,6 +45,7 @@ CodeMirror.defineInitHook(cm => {
   scan(div);
 });
 
+const cmOf = t => (t && t.nodeType === 1 ? t : t && t.parentElement)?.closest?.('.CodeMirror')?.CodeMirror;
 const norm = s => s.replace(/[\s\u200b]/g, '');
 const DELETE = /^delete(Content|Word|SoftLine|HardLine|Entire)/;
 const HEAL = /^(delete|insertFromPaste|insertReplacement)/;
@@ -105,22 +100,7 @@ addEventListener('input', e => {
 }, true);
 '''
 
-GBOARD_CSS = r'''.CodeMirror-gutter-wrapper:not(:has(.CodeMirror-gutter-elt:not(.CodeMirror-linenumber))) { display: none !important; }
-.CodeMirror-code > div[data-ln]::before {
-  content: attr(data-ln);
-  position: absolute;
-  top: 0;
-  left: calc(var(--md-lnl, 0px) - var(--md-g, 0px));
-  box-sizing: content-box;
-  width: var(--md-lnw, 20px);
-  padding: 0 3px 0 5px;
-  text-align: right;
-  white-space: nowrap;
-  color: color-mix(in srgb, currentColor 55%, transparent);
-  pointer-events: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
+GBOARD_CSS = r'''.CodeMirror-linenumber[data-ln]::before { content: attr(data-ln); }
 .CodeMirror-gutters,
 .CodeMirror-gutter-wrapper,
 .CodeMirror-linenumber {
