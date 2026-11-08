@@ -44,6 +44,7 @@ Everything else is still Stylus: UserCSS, the built-in editor and linters, cloud
 - Top bar with brand, master on/off switch, a **Manage** pill with its own dropdown, info and settings icons.
 - **Find styles for this site** row with a visible search progress, then inline results.
 - **Toggle styles** card and a **Write new style for** card with the current site.
+- Brand row with the Stylus logo above the toolbar.
 - Per-style icons that read at a glance: configure, edit, menu.
 - Delete confirmation matches every other dialog: red title, filled red **Delete** button.
 
@@ -58,6 +59,8 @@ Everything else is still Stylus: UserCSS, the built-in editor and linters, cloud
 - Centered, capitalized title and one icon toolbar: add, check for updates, history, injection order, cloud sync, import, export, settings.
 - One search row with a sort icon. Filter and help (links and backup) open as popovers when tapped.
 - Per-card icons: configure, homepage, update, delete.
+- **Update progress:** checking for updates shows a bar with a live percentage and a `Checking 12 / 80` counter.
+- **Import progress:** importing a backup shows the same bar through `Analyzing`, `Importing n / total` and `Done`, so large backups no longer look frozen.
 - Delete confirmation with a red primary button.
 
 </details>
@@ -68,11 +71,23 @@ Everything else is still Stylus: UserCSS, the built-in editor and linters, cloud
 <br>
 
 - Compact layout always on: enable switch, name, and Save in the first row.
-- Captioned icon toolbar: **Styles, Copy, Paste, Select all, Beautify, Docs, UserCSS docs, Homepage**.
-- New **Copy**, **Paste** and **Select all** buttons that work on the active editor.
+- Captioned icon toolbar: **Styles, Search, Beautify, RegExp, Select all, Copy, Paste, Import, Export, Docs, UserCSS docs, Homepage**.
+  - Fits in one row when the screen is wide enough, otherwise wraps into balanced rows.
+  - Publish and Sections panels open aligned under their own buttons and stay inside the screen.
+- **Search and replace bar** (new): tap **Search** to open it in the top panel.
+  - Highlights every match, with a live `3/12` counter and previous and next buttons.
+  - Case-insensitive until you type an uppercase letter.
+  - Replace one or replace all, with a `N replaced` confirmation. The swap icon shows or hides the replace field.
+  - Searches every section of the style, not only the focused one.
+  - **Enter** jumps to the next match, **Esc** closes the bar. The on-screen keyboard stays open while you tap bar buttons.
+- **Copy**, **Paste** and **Select all** buttons that work on the active editor.
   - Copy takes the selection, or the whole style when nothing is selected.
   - Paste replaces the editor content with the clipboard.
   - The on-screen keyboard stays open while you tap them, and a toast confirms the result.
+- **Gboard and Android text fixes** (new):
+  - Line numbers are no longer part of the selection, Copy or Cut.
+  - Backspace or Clear on a selection no longer desyncs the editor display.
+  - Gboard **Copy** and **Cut** from the text-editing panel no longer add blank lines between code lines.
 - Section widget (`@-moz-document`) lines up with the code gutter.
 - Sticky header gains elevation while you scroll.
 
@@ -129,26 +144,33 @@ Every build embeds an update URL pointing at `updates.json` in the latest releas
 
 ## How it works
 
-The fork carries no hand-edited UI code. A single script, [`patch.py`](./patch.py), turns a clean Stylus checkout into Stylus Material, and two workflows keep it current.
+The fork carries no hand-edited UI code. Two scripts, [`patch.py`](./patch.py) and [`patch2.py`](./patch2.py), turn a clean Stylus checkout into Stylus Material, and two workflows keep it current.
 
 ```mermaid
 flowchart LR
   A["openstyles/stylus"] -->|"daily sync"| B["this fork"]
-  B --> C["patch.py"]
+  B --> C["patch.py + patch2.py"]
   C --> D["pnpm build, Firefox MV2"]
   D --> E["stylus-material-x.y.z.n.xpi"]
   E --> F["GitHub release + updates.json"]
   F -->|"update_url"| G["Firefox"]
 ```
 
-`patch.py` writes the Material stylesheet, swaps the icon set, edits the HTML and JS entry points through anchored replacements, adds the clipboard bar, and forces the mobile behavior (card list, compact layout). It is safe to re-run: every edit is skipped when already applied. In CI it runs with `--strict`, so if upstream moves an anchor the build fails loudly instead of shipping a half-patched UI.
+| Script | Does |
+|---|---|
+| [`patch.py`](./patch.py) | Writes the Material stylesheet, swaps the icon set, edits the HTML and JS entry points through anchored replacements, adds the clipboard bar, progress bars and panel positioning, and forces the mobile behavior (card list, compact layout). Calls `patch2.py` when done. |
+| [`patch2.py`](./patch2.py) | Adds the search and replace bar and the one-row toolbar fit. Applies the Gboard fixes: line numbers drawn by CSS, selection and Backspace healing, and a build-time webpack patch (`tools/wp-patch-cm-dom.js`) that retags CodeMirror's line DOM so Gboard Copy and Cut produce exactly one newline per line. |
+
+Both scripts are safe to re-run: every edit is skipped when already applied. In CI they run with `--strict`, so if upstream moves an anchor the build fails loudly instead of shipping a half-patched UI.
+
+To run only the second patch on an already patched checkout: `python patch2.py`.
 
 ### Workflows
 
 | Workflow | Trigger | Does |
 |---|---|---|
 | [`SyncUpstream.yml`](./.github/workflows/SyncUpstream.yml) | Daily 03:17 UTC, manual | Merges `openstyles/stylus` into the fork and pushes. Keeps this README on conflict and leaves the fork's workflows untouched. Triggers a build when new upstream commits landed. |
-| [`BuildFork.yml`](./.github/workflows/BuildFork.yml) | Manual, push to `patch.py` or the workflow, triggered by sync | Runs `patch.py`, builds the Firefox MV2 package, writes `updates.json`, uploads the `.xpi`, publishes a release. |
+| [`BuildFork.yml`](./.github/workflows/BuildFork.yml) | Manual, push to `patch.py`, `patch2.py` or the workflow, triggered by sync | Runs `patch.py` (which runs `patch2.py`), builds the Firefox MV2 package, writes `updates.json`, uploads the `.xpi`, publishes a release. |
 
 If a sync hits a conflict anywhere other than `README.md` or `.github/workflows`, it stops with an error listing the files so you can resolve them by hand.
 
