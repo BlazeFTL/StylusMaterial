@@ -6,6 +6,8 @@ Stylus Material patch #2 (runs after patch.py; patch.py calls it automatically).
   - Gboard / Android text-selection fixes for CodeMirror 5:
       * line numbers no longer end up in selection, Copy, Cut (numbers are drawn by CSS, not text)
       * Gboard Backspace / "Clear" on a selection no longer desyncs the editor display
+      * Gboard Copy / Cut (text-editing panel) no longer adds blank lines: CodeMirror line DOM is retagged
+        at build time so Gecko's IME text has exactly one newline per line (no gutter/number/pre extras)
 
 Standalone: python patch2.py [repo]   (after patch.py)
 """
@@ -534,6 +536,47 @@ SEARCH_CSS = r'''/* row 1: Styles, Beautify, RegExp ... Select all, Search, Copy
 .md-find-cur { background: rgba(255, 140, 0, .62) !important; outline: 1px solid #f57c00; border-radius: 2px; }
 '''
 
+CM_DOM_JS = r'''
+'use strict';
+
+const {makePatchOptions} = require('./util');
+
+// Gecko builds the IME text (Gboard Copy/Cut/Select all) by adding "\n" before every element that
+// is not an inline tag. A CodeMirror 5 line is div + gutter div + number div + marker divs + pre,
+// so copied text got 4-6 newlines per line. Only the line's <pre> keeps a block tag (exactly one
+// "\n" per line); the rest becomes <cm-x> (unknown tag, no line break; styled display:block).
+const X = '$1"cm-x"$2';
+
+module.exports = makePatchOptions([
+  ['codemirror',
+    [/(lineView\.node = elt\()"div"(, null, null, "position: relative"\))/, X],
+    [/(wrap\.insertBefore\(elt\()"div"(, null, cls\))/, X],
+    [/(lineView\.gutterBackground = elt\()"div"()/, X],
+    [/(lineView\.gutter = elt\()"div"()/, X],
+    [/(elt\()"div"(, lineNumberFor\()/, X],
+    [/(gutterWrap\.appendChild\(elt\()"div"(, \[found\])/, X],
+    // empty line: its zero-width space text node is copied too; draw it with ::before instead
+    [/(zwspSupported \? elt\("span", )"\\u200b"(\) :)/, '$1null, "md-zw"$2'],
+  ],
+  ['codemirror/addon/fold/foldgutter',
+    [/(var elt = document\.createElement\()"div"(\))/, X],
+  ],
+  ['codemirror/addon/lint/lint',
+    [/(var marker = document\.createElement\()"div"(\), inner = marker;)/, X],
+    [/(inner = marker\.appendChild\(document\.createElement\()"div"(\))/, X],
+  ],
+]);
+'''.lstrip()
+
+CM_DOM_CSS_ANCHOR = '.CodeMirror-linenumber {\n  cursor: pointer; /* for bookmarking */\n}\n'
+CM_DOM_CSS = CM_DOM_CSS_ANCHOR + r'''cm-x {
+  display: block;
+}
+.md-zw::before {
+  content: "\200b";
+}
+'''
+
 TOOLBAR_JS = r'''const IDS = ['cancel-button', 'cm-search', 'beautify', 'testRE', 'cm-select-all', 'cm-copy', 'cm-paste',
   'from-mozilla', 'to-mozilla', 'usercss-docs', 'url', 'preview-error'];
 const MIN = 40;
@@ -580,12 +623,20 @@ EDIT_HTML_BTN = (
 
 
 def apply(root, P, log, warn):
-    print('== patch2: search bar + Gboard fixes')
+    print('== patch2: search bar + Gboard fixes (incl. clean Gboard Copy/Cut)')
     P.put('src/edit/gboard-fix.js', GBOARD_JS)
     P.put('src/edit/gboard-fix.css', GBOARD_CSS)
     P.put('src/edit/search-bar.js', SEARCH_JS)
     P.put('src/edit/search-bar.css', SEARCH_CSS)
     P.put('src/edit/toolbar-fit.js', TOOLBAR_JS)
+    P.put('tools/wp-patch-cm-dom.js', CM_DOM_JS)
+    P.edit('tools/wp-patch-codemirror.js', 'module.exports = patchCodeMirror;',
+           "module.exports = [...patchCodeMirror, ...require('./wp-patch-cm-dom')];",
+           marker='wp-patch-cm-dom')
+    P.edit('src/cm/index.css', CM_DOM_CSS_ANCHOR, CM_DOM_CSS, marker='cm-x')
+    # color swatch click finds its line wrapper via closest('div'); the wrapper is <cm-x> now
+    P.edit('src/js/color/color-view.js', "swatch.closest('div')", "swatch.closest('cm-x, div')",
+           marker="closest('cm-x, div')")
 
     P.edit('src/edit.html',
            r'(id="cm-paste"[^>]*>\s*<i class="i-paste"></i>\s*</a>)',
