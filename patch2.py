@@ -52,6 +52,14 @@ const norm = s => s.replace(/[\s\u200b]/g, '');
 const DELETE = /^delete(Content|Word|SoftLine|HardLine|Entire)/;
 const HEAL = /^(delete|insertFromPaste|insertReplacement)/;
 const timers = new WeakMap();
+const pend = new WeakMap();
+const cancelPend = cm => {
+  const t = pend.get(cm);
+  if (t) {
+    clearTimeout(t);
+    pend.delete(cm);
+  }
+};
 
 addEventListener('beforeinput', e => {
   if (e.isComposing || !e.cancelable || !DELETE.test(e.inputType)) return;
@@ -66,7 +74,11 @@ addEventListener('beforeinput', e => {
   }
   if (cm.somethingSelected() && norm(cm.getSelection()) === norm(sel.toString())) {
     e.preventDefault();
-    cm.replaceSelection('', null, '+delete');
+    cancelPend(cm);
+    pend.set(cm, setTimeout(() => {
+      pend.delete(cm);
+      if (cm.somethingSelected()) cm.replaceSelection('', null, '+delete');
+    }, 90));
   }
 }, true);
 
@@ -93,6 +105,64 @@ const onClip = e => {
 addEventListener('copy', onClip, true);
 addEventListener('cut', onClip, true);
 
+const textOf = e => e.clipboardData?.getData('text/plain') || e.clipboardData?.getData('text') || '';
+
+const put = (cm, text, origin) => {
+  if (!text || cm.isReadOnly()) return;
+  cm.replaceSelection(text.replace(/\r\n?/g, '\n'), 'end', origin);
+};
+
+const readClip = cm => {
+  const fallback = () => {
+    try {
+      const ta = document.createElement('textarea');
+      ta.style.cssText = 'position:fixed;left:-999px;top:0;opacity:0';
+      document.body.append(ta);
+      ta.focus();
+      const ok = document.execCommand('paste');
+      const v = ta.value;
+      ta.remove();
+      cm.focus();
+      if (ok && v) put(cm, v, 'paste');
+    } catch {
+      // ignore
+    }
+  };
+  try {
+    navigator.clipboard.readText().then(t => (t ? put(cm, t, 'paste') : fallback()), fallback);
+  } catch {
+    fallback();
+  }
+};
+
+addEventListener('paste', e => {
+  const cm = cmOf(e.target);
+  if (!cm) return;
+  cancelPend(cm);
+  if (cm.isReadOnly() || textOf(e)) return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  readClip(cm);
+}, true);
+
+addEventListener('compositionstart', e => {
+  const cm = cmOf(e.target);
+  if (cm) cancelPend(cm);
+}, true);
+
+addEventListener('beforeinput', e => {
+  if (!/^insert/.test(e.inputType || '')) return;
+  const cm0 = cmOf(e.target);
+  if (cm0) cancelPend(cm0);
+  if (e.isComposing || !e.cancelable || !/^(insertText|insertFromPaste|insertReplacementText)$/.test(e.inputType)) return;
+  const cm = cm0;
+  if (!cm || cm.isReadOnly() || !cm.somethingSelected()) return;
+  const text = e.dataTransfer?.getData('text/plain') || e.data || '';
+  e.preventDefault();
+  if (text) put(cm, text, e.inputType === 'insertFromPaste' ? 'paste' : '+input');
+  else if (e.inputType === 'insertFromPaste') readClip(cm);
+}, true);
+
 addEventListener('input', e => {
   if (e.isComposing || !HEAL.test(e.inputType || '')) return;
   const cm = cmOf(e.target);
@@ -112,7 +182,8 @@ GBOARD_CSS = r'''.CodeMirror-linenumber[data-ln]::before { content: attr(data-ln
 }
 '''
 
-SEARCH_JS = r'''import editor from './editor';
+SEARCH_JS = r'''import {CodeMirror} from '@/cm';
+import editor from './editor';
 import './search-bar.css';
 
 const ICON = {
@@ -134,6 +205,13 @@ let isOpen = false;
 let isRep = false;
 let cur = null;
 let timer;
+let tallyTimer;
+let holdUntil = 0;
+let lp = null;
+let lpClear;
+const LP_MIN = 250;
+const LP_MAX = 2000;
+const LP_MOVE = 12;
 const overlays = new Map();
 
 const btn = (a, d, title) =>
@@ -210,6 +288,7 @@ function step(dir, inclusive) {
 
 function tally(replaced) {
   if (replaced != null) {
+    holdUntil = Date.now() + 1500;
     countEl.textContent = `${replaced} replaced`;
     countEl.classList.remove('none');
     return;
@@ -217,6 +296,7 @@ function tally(replaced) {
   const s = findEl.value;
   if (!s) {
     countEl.textContent = '';
+    countEl.classList.remove('none');
     return;
   }
   const f = cur && cur.mark.find();
@@ -229,9 +309,90 @@ function tally(replaced) {
       if (!idx && f && cm === cur.cm && c.from().line === f.from.line && c.from().ch === f.from.ch) idx = total;
     }
   }
-  countEl.textContent = total ? `${idx ? idx + '/' : ''}${total}${total >= MAX ? '+' : ''}` : '0';
+  countEl.textContent = total ? `${idx || '-'}/${total}${total >= MAX ? '+' : ''}` : '0/0';
   countEl.classList.toggle('none', !total);
 }
+
+function scheduleTally() {
+  if (!isOpen || !findEl || !findEl.value) return;
+  clearTimeout(tallyTimer);
+  tallyTimer = setTimeout(() => {
+    tallyTimer = 0;
+    if (Date.now() < holdUntil) return;
+    tally();
+  }, 200);
+}
+
+const cmOfNode = t => (t && t.nodeType === 1 ? t : t && t.parentElement)?.closest?.('.CodeMirror')?.CodeMirror;
+
+function matchAround(cm, from, to) {
+  const s = findEl.value;
+  if (!s || from.line !== to.line) return null;
+  const c = cm.getSearchCursor(s, {line: from.line, ch: 0}, opts(s));
+  while (c.findNext()) {
+    const a = c.from();
+    const b = c.to();
+    if (a.line !== from.line) break;
+    if (a.ch <= from.ch && b.ch >= to.ch) return {from: a, to: b};
+    if (a.ch > to.ch) break;
+  }
+  return null;
+}
+
+function onCursor(cm) {
+  if (!lp || lp.done || lp.cm !== cm || !isOpen || !findEl || !findEl.value) return;
+  const dt = Date.now() - lp.t;
+  if (dt < LP_MIN || dt > LP_MAX) return;
+  if (!cm.somethingSelected() && dt < 500) return;
+  const m = matchAround(cm, cm.getCursor('from'), cm.getCursor('to'));
+  if (!m) return;
+  lp.done = true;
+  const apply = () => {
+    const a = cm.getCursor('from');
+    const b = cm.getCursor('to');
+    if (a.line !== m.from.line || a.ch !== m.from.ch || b.line !== m.to.line || b.ch !== m.to.ch) {
+      cm.setSelection(m.from, m.to);
+    }
+  };
+  setTimeout(() => {
+    apply();
+    clearCur();
+    cur = {cm, mark: cm.markText(m.from, m.to, {className: 'md-find-cur'})};
+    cm.lastActive = Date.now();
+    tally();
+  }, 0);
+  for (const ms of [60, 160, 300]) setTimeout(apply, ms);
+}
+
+function onChange() {
+  scheduleTally();
+}
+
+CodeMirror.defineInitHook(cm => {
+  cm.on('cursorActivity', onCursor);
+  cm.on('change', onChange);
+});
+
+const lpEnd = () => {
+  clearTimeout(lpClear);
+  lpClear = setTimeout(() => {
+    lp = null;
+  }, 700);
+};
+const LP_OPT = {capture: true, passive: true};
+addEventListener('touchstart', e => {
+  clearTimeout(lpClear);
+  const t = e.touches[0];
+  const cm = e.touches.length === 1 && cmOfNode(e.target);
+  lp = cm ? {cm, t: Date.now(), x: t.clientX, y: t.clientY, done: false} : null;
+}, LP_OPT);
+addEventListener('touchmove', e => {
+  if (!lp) return;
+  const t = e.touches[0];
+  if (Math.abs(t.clientX - lp.x) > LP_MOVE || Math.abs(t.clientY - lp.y) > LP_MOVE) lp = null;
+}, LP_OPT);
+addEventListener('touchend', lpEnd, LP_OPT);
+addEventListener('touchcancel', lpEnd, LP_OPT);
 
 function refresh() {
   clearTimeout(timer);
@@ -480,34 +641,52 @@ SEARCH_CSS = r'''/* row 1: Styles, Beautify, RegExp ... Select all, Search, Copy
 }
 #md-sb[hidden], #md-sb .md-sb-row[hidden] { display: none !important; }
 #md-sb .md-sb-row { display: flex; align-items: center; gap: 2px; }
-#md-sb .md-sb-field { position: relative; flex: 1 1 auto; min-width: 0; margin-right: 2px; }
+#md-sb .md-sb-field {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 40px;
+  margin-right: 2px;
+  border-radius: 20px;
+  background: var(--md-surface-v, #e3e7f2);
+}
+#md-sb .md-sb-field:focus-within { box-shadow: 0 0 0 2px var(--md-primary, #0b57d0); }
 #md-sb input {
   display: block;
-  width: 100%;
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
   height: 40px;
   min-height: 0;
   box-sizing: border-box;
   margin: 0;
-  padding: 0 56px 0 14px;
+  padding: 0 6px 0 14px;
   border: 0 !important;
   border-radius: 20px !important;
   outline: none !important;
-  background: var(--md-surface-v, #e3e7f2) !important;
+  background: transparent !important;
   color: var(--md-text, inherit) !important;
   font: 14px/1.2 var(--family, system-ui, sans-serif);
   box-shadow: none;
 }
-#md-sb .md-sb-rep input { padding-right: 14px; }
-#md-sb input:focus { box-shadow: 0 0 0 2px var(--md-primary, #0b57d0) !important; }
+#md-sb .md-sb-field:not(:has(.md-sb-count)) input,
+#md-sb .md-sb-field:has(.md-sb-count:empty) input { padding-right: 14px; }
+#md-sb input:focus { box-shadow: none !important; }
 #md-sb .md-sb-count {
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
+  flex: 0 0 auto;
+  min-width: 36px;
+  padding: 0 14px 0 6px;
+  text-align: right;
+  white-space: nowrap;
   color: var(--md-text-2, #555);
-  font: 500 12px/1 var(--family, system-ui, sans-serif);
+  font: 500 13px/1 var(--family, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  -webkit-user-select: none;
+  user-select: none;
   pointer-events: none;
 }
+#md-sb .md-sb-count:empty { display: none; }
 #md-sb .md-sb-count.none { color: var(--md-danger, #b3261e); }
 #md-sb .md-sb-btn {
   flex: 0 0 auto;
@@ -522,6 +701,7 @@ SEARCH_CSS = r'''/* row 1: Styles, Beautify, RegExp ... Select all, Search, Copy
   cursor: pointer;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 #md-sb .md-sb-btn:active { background: var(--md-primary-c, #d3e3fd); }
 #md-sb .md-sb-btn.on { background: var(--md-primary-c, #d3e3fd); color: var(--md-on-primary-c, #041e49); }
