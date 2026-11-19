@@ -52,6 +52,14 @@ const norm = s => s.replace(/[\s\u200b]/g, '');
 const DELETE = /^delete(Content|Word|SoftLine|HardLine|Entire)/;
 const HEAL = /^(delete|insertFromPaste|insertReplacement)/;
 const timers = new WeakMap();
+const pend = new WeakMap();
+const cancelPend = cm => {
+  const t = pend.get(cm);
+  if (t) {
+    clearTimeout(t);
+    pend.delete(cm);
+  }
+};
 
 addEventListener('beforeinput', e => {
   if (e.isComposing || !e.cancelable || !DELETE.test(e.inputType)) return;
@@ -66,7 +74,11 @@ addEventListener('beforeinput', e => {
   }
   if (cm.somethingSelected() && norm(cm.getSelection()) === norm(sel.toString())) {
     e.preventDefault();
-    cm.replaceSelection('', null, '+delete');
+    cancelPend(cm);
+    pend.set(cm, setTimeout(() => {
+      pend.delete(cm);
+      if (cm.somethingSelected()) cm.replaceSelection('', null, '+delete');
+    }, 90));
   }
 }, true);
 
@@ -101,24 +113,49 @@ const put = (cm, text, origin) => {
 };
 
 const readClip = cm => {
+  const fallback = () => {
+    try {
+      const ta = document.createElement('textarea');
+      ta.style.cssText = 'position:fixed;left:-999px;top:0;opacity:0';
+      document.body.append(ta);
+      ta.focus();
+      const ok = document.execCommand('paste');
+      const v = ta.value;
+      ta.remove();
+      cm.focus();
+      if (ok && v) put(cm, v, 'paste');
+    } catch {
+      // ignore
+    }
+  };
   try {
-    navigator.clipboard?.readText().then(t => put(cm, t, 'paste')).catch(() => {});
+    navigator.clipboard.readText().then(t => (t ? put(cm, t, 'paste') : fallback()), fallback);
   } catch {
-    // ignore
+    fallback();
   }
 };
 
 addEventListener('paste', e => {
   const cm = cmOf(e.target);
-  if (!cm || cm.isReadOnly() || textOf(e)) return;
+  if (!cm) return;
+  cancelPend(cm);
+  if (cm.isReadOnly() || textOf(e)) return;
   e.preventDefault();
   e.stopImmediatePropagation();
   readClip(cm);
 }, true);
 
-addEventListener('beforeinput', e => {
-  if (e.isComposing || !e.cancelable || !/^(insertText|insertFromPaste|insertReplacementText)$/.test(e.inputType)) return;
+addEventListener('compositionstart', e => {
   const cm = cmOf(e.target);
+  if (cm) cancelPend(cm);
+}, true);
+
+addEventListener('beforeinput', e => {
+  if (!/^insert/.test(e.inputType || '')) return;
+  const cm0 = cmOf(e.target);
+  if (cm0) cancelPend(cm0);
+  if (e.isComposing || !e.cancelable || !/^(insertText|insertFromPaste|insertReplacementText)$/.test(e.inputType)) return;
+  const cm = cm0;
   if (!cm || cm.isReadOnly() || !cm.somethingSelected()) return;
   const text = e.dataTransfer?.getData('text/plain') || e.data || '';
   e.preventDefault();
