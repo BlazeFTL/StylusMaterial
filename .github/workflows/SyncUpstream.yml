@@ -78,4 +78,5 @@ jobs:
         if: steps.sync.outputs.merged == 'true' || (github.event_name == 'workflow_dispatch' && inputs.build)
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: gh workflow run BuildFork.yml --ref "$GITHUB_REF_NAME"
