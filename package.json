@@ -1,6 +1,6 @@
 {
   "name": "Stylus",
-  "version": "2.4.18",
+  "version": "2.4.19",
   "description": "Redesign the web with Stylus, a user styles manager",
   "license": "GPL-3.0-only",
   "repository": "openstyles/stylus",
@@ -8,7 +8,7 @@
   "dependencies": {
     "@eight04/draggable-list": "^0.3.0",
     "codemirror": "5.65.20",
-    "csslint-mod": "github:openstyles/csslint-mod#semver:v1.0.21-fix",
+    "csslint-mod": "github:openstyles/csslint-mod#semver:v1.0.22",
     "db-to-cloud": "^0.9.1",
     "less": "^4.9.1",
     "lz-string-unsafe": "1.4.4-fork-1",
