@@ -38,6 +38,10 @@ const GET_CLIENT_DATA_TAG = {
   toString: () => `<script src="${JS}${GET_CLIENT_DATA}.js"></script>`,
 };
 const RESOLVE_VIA_SHIM = {
+  alias: {
+    // for local build when using "link:../cm5-css-mode-mod"
+    codemirror: SRC + '../node_modules/codemirror',
+  },
   modules: [
     SHIM,
     'node_modules',
@@ -108,7 +112,7 @@ function makeManifest(files) {
       else base[key] = val;
     }
   }
-  let ver = base.version;
+  const ver = base.version;
   if (BUILD === 'firefox') {
     delete base.key;
   }
@@ -122,8 +126,7 @@ function makeManifest(files) {
       : 'apmmpaebfobifelkijhaljbmpcgbjbdo';
     if (!isStable) {
       base.name += ` (beta)`;
-      ver = base.version = ver.replace(/^2\./, '3.');
-      ver += '-beta';
+      base.version = ver.replace(/^2\./, '3.');
     }
     fs.appendFileSync(process.env.GITHUB_ENV, `EXTENSION_ID=${extId}\n`, 'utf8');
   }
@@ -164,6 +167,7 @@ module.exports = [
               '/cm/(?!jsonlint)',
               '/codemirror/(?!mode/javascript)',
               '/vendor-overwrites/codemirror',
+              '/cm5-css-mode-mod',
             ].join('|').replaceAll('/', SEP_ESC)),
             name: 'codemirror',
             enforce: true,
